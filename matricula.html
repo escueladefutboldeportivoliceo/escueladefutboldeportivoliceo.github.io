@@ -336,30 +336,9 @@
 </nav>
 
 <script>
-  // Formulario de Google donde llegan las respuestas
-  const FORM_ID = '1FAIpQLSfo1zprZU7fuCPZ7zpG8AOT1OPbcIyxkgEKnmf8gP33trZ2SA';
-  const FORM_ACTION = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/formResponse';
+  // Dirección del programa (Apps Script) que guarda la ficha en el formulario y la envía al correo de la Escuela
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwH-zFw51p0k7ORyjXLKfZkBJwYKRkLZXU1UV7BvvSbcs74edbnweksEH7BBb6n20fEiQ/exec";
   const WSP = '56959702063';
-
-  // Campo de la app -> pregunta del formulario de Google
-  const ENTRY = {
-      "email": "emailAddress",
-      "nombre": "entry.579902664",
-      "nacimiento": "entry.1140703891",
-      "edad": "entry.1579112208",
-      "sexo": "entry.253013751",
-      "rut": "entry.821884959",
-      "direccion": "entry.322700660",
-      "telefono": "entry.729991281",
-      "apoderado": "entry.522988367",
-      "parentesco": "entry.1496596161",
-      "rutApoderado": "entry.1344336791",
-      "telApoderado": "entry.940614369",
-      "correoApoderado": "entry.229097113",
-      "enfermedad": "entry.240773186",
-      "medicamento": "entry.1693428465",
-      "autoriza": "entry.2078405077"
-  };
 
   const $ = id => document.getElementById(id);
   const form = $('form'), ok = $('ok'), errorGeneral = $('errorGeneral'), btnEnviar = $('btnEnviar');
@@ -503,26 +482,24 @@
       errores[0].closest('.campo').scrollIntoView({behavior: 'smooth', block: 'center'});
       return;
     }
-    if (Object.values(ENTRY).some(v => !v)) { mostrarError('Vista previa: la ficha todavía no está conectada al formulario de Google, así que no se envió.'); return; }
+    if (!SCRIPT_URL) { mostrarError('Vista previa: la ficha todavía no está conectada, así que no se envió.'); return; }
     if (!navigator.onLine) { mostrarError('No hay conexión. Tu ficha quedó guardada en este celular: envíala cuando tengas señal.'); return; }
 
     const d = datos(), r = respuesta(d);
-    const params = new URLSearchParams();
-    params.append(ENTRY.email, d.email);
-    Object.entries(r).forEach(([k, v]) => { if (ENTRY[k] && v !== '') params.append(ENTRY[k], v); });
-    params.append('fvv', '1');
-    params.append('pageHistory', '0');
+    const envio = Object.assign({email: d.email}, r);
 
     btnEnviar.disabled = true; btnEnviar.textContent = 'Enviando…';
     try {
-      await fetch(FORM_ACTION, {method: 'POST', mode: 'no-cors', body: params});
+      const res = await fetch(SCRIPT_URL, {method: 'POST', body: JSON.stringify(envio)});
+      const json = await res.json();
+      if (!json.ok) throw new Error('rechazada');
       try { localStorage.removeItem(CLAVE); } catch (e) {}
       $('okTexto').textContent = 'Recibimos la matrícula de ' + d.nombre + '. Si tienes dudas sobre valores u horarios, escríbenos por WhatsApp.';
       $('wspOk').href = wsp('Hola, acabo de enviar la ficha de matrícula 2026 de ' + d.nombre + ' en la Escuela de Fútbol Deportivo Liceo.');
       form.hidden = true; ok.classList.add('ver');
       $('ficha').scrollIntoView({behavior: 'smooth', block: 'start'});
     } catch (err) {
-      mostrarError('No se pudo enviar. Revisa tu conexión e inténtalo de nuevo; tus datos siguen guardados.');
+      mostrarError('No se pudo enviar la ficha. Revisa tu conexión e inténtalo de nuevo; tus datos siguen guardados. Si el problema sigue, escríbenos por WhatsApp.');
     } finally {
       btnEnviar.disabled = false; btnEnviar.textContent = 'Enviar ficha de matrícula';
     }
