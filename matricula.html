@@ -165,6 +165,10 @@
   .guardado{margin-top:10px;text-align:center;font-size:14px;color:#5B6B5C}
   .tarjeta.ok{display:none}
   .tarjeta.ok.ver{display:block}
+  .aviso{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:16px;padding:12px 14px;border-radius:14px;
+    background:#FFF6D6;border:1px solid #F2D77A;font-size:15px;color:#3E3A1F}
+  .aviso[hidden]{display:none}
+  .aviso button{flex:none;min-height:40px;padding:0 14px;border-radius:12px;border:0;background:var(--oscuro);color:var(--blanco);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
 </style>
 </head>
 <body>
@@ -205,6 +209,10 @@
 
 <section class="seccion" id="ficha">
   <div class="wrap">
+    <div class="aviso" id="aviso" hidden>
+      <span>Recuperamos los datos que quedaron sin enviar en este celular.</span>
+      <button type="button" id="borrarDatos">Borrar datos</button>
+    </div>
     <form id="form" novalidate autocomplete="on">
 
       <div class="titulo-sec"><div class="num">1</div><h2>Datos del estudiante</h2></div>
@@ -286,7 +294,7 @@
 
       <p class="error-general" id="errorGeneral" role="alert" hidden></p>
       <button class="btn btn-amarillo enviar" type="submit" id="btnEnviar">Enviar ficha de matrícula</button>
-      <p class="guardado" id="guardado">Lo que escribes se guarda en este celular hasta que envíes la ficha.</p>
+        <p class="guardado" id="guardado">Si cierras la página antes de enviar, lo escrito queda guardado en este celular. Al enviar la ficha se borra.</p>
     </form>
 
     <div class="tarjeta ok" id="ok">
@@ -408,6 +416,13 @@
   });
 
   // ---------- Borrador en el celular ----------
+  function limpiarTodo(){
+    try { localStorage.removeItem(CLAVE); } catch (e) {}
+    form.reset(); edadManual = false;
+    form.enfermedadCual.hidden = true; form.medicamentoCual.hidden = true;
+    form.querySelectorAll('.ayuda').forEach(a => { a.textContent = ''; a.className = 'ayuda'; });
+    $('aviso').hidden = true;
+  }
   function datos(){
     const d = {};
     new FormData(form).forEach((v, k) => { d[k] = typeof v === 'string' ? v.trim() : v; });
@@ -419,7 +434,8 @@
   function restaurar(){
     let d = null;
     try { d = JSON.parse(localStorage.getItem(CLAVE) || 'null'); } catch (e) {}
-    if (!d) return;
+    if (!d || !Object.values(d).some(v => v)) return;
+    $('aviso').hidden = false;
     Object.entries(d).forEach(([k, v]) => {
       const el = form.elements[k]; if (!el) return;
       if (el instanceof RadioNodeList) { el.forEach(r => { r.checked = r.value === v; }); }
@@ -432,7 +448,10 @@
   }
   form.addEventListener('input', guardar);
   form.addEventListener('change', guardar);
+  $('borrarDatos').addEventListener('click', limpiarTodo);
   restaurar();
+  // Safari puede restaurar la página con los campos llenos al volver a abrirla
+  window.addEventListener('pageshow', ev => { if (ev.persisted && !localStorage.getItem(CLAVE)) limpiarTodo(); });
 
   // ---------- Validación ----------
   function marcar(el, mensaje){
@@ -493,7 +512,7 @@
       const res = await fetch(SCRIPT_URL, {method: 'POST', body: JSON.stringify(envio)});
       const json = await res.json();
       if (!json.ok) throw new Error('rechazada');
-      try { localStorage.removeItem(CLAVE); } catch (e) {}
+      limpiarTodo();
       $('okTexto').textContent = 'Recibimos la matrícula de ' + d.nombre + '. Si tienes dudas sobre valores u horarios, escríbenos por WhatsApp.';
       $('wspOk').href = wsp('Hola, acabo de enviar la ficha de matrícula 2026 de ' + d.nombre + ' en la Escuela de Fútbol Deportivo Liceo.');
       form.hidden = true; ok.classList.add('ver');
@@ -506,9 +525,7 @@
   });
 
   $('otro').addEventListener('click', () => {
-    form.reset(); edadManual = false;
-    form.enfermedadCual.hidden = true; form.medicamentoCual.hidden = true;
-    form.querySelectorAll('.ayuda').forEach(a => { a.textContent = ''; a.className = 'ayuda'; });
+    limpiarTodo();
     ok.classList.remove('ver'); form.hidden = false;
     $('ficha').scrollIntoView({behavior: 'smooth', block: 'start'});
   });
