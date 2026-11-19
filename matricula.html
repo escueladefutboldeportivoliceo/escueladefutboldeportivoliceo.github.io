@@ -121,6 +121,47 @@
   .flotante .btn{flex:1}
   .flotante .btn-wsp{flex:none;width:56px;padding:0;background:#25D366;color:var(--blanco)}
   @media (min-width:700px){ .flotante{max-width:720px;margin:0 auto} }
+  /* Ficha propia */
+  #form .titulo-sec{margin-top:30px}
+  #form .titulo-sec:first-child{margin-top:0}
+  .campos{display:grid;gap:18px}
+  .campo{display:grid;gap:8px;border:0;min-width:0}
+  .lbl{font-weight:600;font-size:16px;color:var(--texto);line-height:1.35;padding:0}
+  .lbl i{color:#C0392B;font-style:normal}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .campo input[type=text],.campo input[type=email],.campo input[type=tel],.campo input[type=number],.campo input[type=date]{
+    width:100%;min-height:54px;padding:12px 14px;border:2px solid #D3DED5;border-radius:14px;background:#F8FBF8;
+    font:inherit;font-size:17px;color:var(--texto);-webkit-appearance:none;appearance:none;transition:border-color .15s,background .15s}
+  .campo input[type=date]{display:block;min-width:0}
+  .campo input::placeholder{color:#93A396}
+  .campo input:focus{outline:none;border-color:var(--vivo);background:var(--blanco);box-shadow:0 0 0 4px rgba(40,185,85,.15)}
+  .fila{display:grid;grid-template-columns:1fr 104px;gap:12px;align-items:end}
+  .opciones{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .op{position:relative}
+  .op input{position:absolute;opacity:0;inset:0}
+  .op span{display:flex;align-items:center;justify-content:center;min-height:54px;border:2px solid #D3DED5;border-radius:14px;
+    background:#F8FBF8;font-weight:600;color:#3E4E3F;cursor:pointer;transition:all .15s}
+  .op input:checked + span{background:var(--oscuro);border-color:var(--oscuro);color:var(--blanco)}
+  .op input:focus-visible + span{box-shadow:0 0 0 4px rgba(40,185,85,.25)}
+  .cual{margin-top:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chips button{min-height:40px;padding:0 14px;border-radius:999px;border:1.5px solid #CFE0D3;background:var(--blanco);
+    font:inherit;font-size:15px;font-weight:500;color:var(--verde);cursor:pointer}
+  .chips button:active{background:#E3F6E8}
+  .ayuda{font-size:14px;min-height:0}
+  .ayuda.bien{color:#1F8A44}
+  .ayuda.mal{color:#B9770E}
+  .campo.error input,.campo.error .op span{border-color:#E06C5B;background:#FFF5F3}
+  .msg{color:#C0392B;font-size:14px;font-weight:500}
+  .autorizacion{font-size:15px;line-height:1.6;color:#334235;background:#F3F7F3;border-left:4px solid var(--vivo);
+    border-radius:0 14px 14px 0;padding:16px 16px}
+  .autorizacion p + p{margin-top:12px}
+  .error-general{margin-top:18px;padding:14px 16px;border-radius:14px;background:#FFF0ED;color:#9B2C1F;font-weight:500}
+  .enviar{width:100%;margin-top:22px}
+  .enviar:disabled{opacity:.7}
+  .guardado{margin-top:10px;text-align:center;font-size:14px;color:#5B6B5C}
+  .tarjeta.ok{display:none}
+  .tarjeta.ok.ver{display:block}
 </style>
 </head>
 <body>
@@ -161,24 +202,99 @@
 
 <section class="seccion" id="ficha">
   <div class="wrap">
-    <div class="titulo-sec"><div class="num">1</div><h2>Ficha de matrícula</h2></div>
-    <p class="alterno" id="alterno">¿No ves la ficha abajo? <a id="linkCompleto" target="_blank" rel="noopener">Ábrela aquí</a></p>
-    <div class="marco" id="marco">
-      <div class="cargando" id="cargando">
-        <p><span class="giro"></span>Cargando la ficha…</p>
-        <div class="barra"></div><div class="barra"></div><div class="barra"></div>
+    <form id="form" novalidate autocomplete="on">
+
+      <div class="titulo-sec"><div class="num">1</div><h2>Datos del estudiante</h2></div>
+      <div class="tarjeta campos">
+        <label class="campo"><span class="lbl">Email <i>*</i></span>
+          <input type="email" name="email" inputmode="email" autocomplete="email" placeholder="correo@ejemplo.cl" required></label>
+        <label class="campo"><span class="lbl">1.1 Nombre completo del estudiante <i>*</i></span>
+          <input type="text" name="nombre" autocomplete="off" autocapitalize="words" placeholder="Nombres y apellidos" required></label>
+        <div class="fila">
+          <label class="campo"><span class="lbl">1.2 Fecha de nacimiento</span>
+            <input type="date" name="nacimiento" max=""></label>
+          <label class="campo corto"><span class="lbl">1.3 Edad</span>
+            <input type="number" name="edad" inputmode="numeric" min="3" max="25" placeholder="—"></label>
+        </div>
+        <fieldset class="campo"><legend class="lbl">1.4 Sexo</legend>
+          <div class="opciones">
+            <label class="op"><input type="radio" name="sexo" value="Masculino"><span>Masculino</span></label>
+            <label class="op"><input type="radio" name="sexo" value="Femenino"><span>Femenino</span></label>
+          </div>
+        </fieldset>
+        <label class="campo"><span class="lbl">1.5 Cédula de identidad</span>
+          <input type="text" name="rut" data-rut inputmode="text" autocomplete="off" placeholder="12.345.678-9" maxlength="12">
+          <small class="ayuda" data-ayuda-rut></small></label>
+        <label class="campo"><span class="lbl">1.6 Dirección</span>
+          <input type="text" name="direccion" autocomplete="street-address" placeholder="Calle, número, sector"></label>
+        <label class="campo"><span class="lbl">1.7 Teléfono de contacto</span>
+          <input type="tel" name="telefono" inputmode="tel" autocomplete="tel" placeholder="+56 9 1234 5678"></label>
       </div>
-      <iframe id="formulario" title="Ficha de matrícula Escuela de Fútbol Deportivo Liceo" loading="eager"></iframe>
-      <div class="ok" id="ok">
-        <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-        <h2>¡Ficha enviada!</h2>
-        <p>Recibimos la matrícula. Si tienes dudas sobre valores u horarios, escríbenos por WhatsApp.</p>
-        <a class="btn btn-verde" id="wspOk" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
-          Escribir por WhatsApp
-        </a>
-        <button class="btn btn-borde" id="otro" type="button">Inscribir a otro jugador</button>
+
+      <div class="titulo-sec"><div class="num">2</div><h2>Datos del padre/madre/tutor</h2></div>
+      <div class="tarjeta campos">
+        <label class="campo"><span class="lbl">2.1 Nombre completo <i>*</i></span>
+          <input type="text" name="apoderado" autocomplete="name" autocapitalize="words" placeholder="Nombres y apellidos" required></label>
+        <label class="campo"><span class="lbl">2.2 Parentesco</span>
+          <input type="text" name="parentesco" autocomplete="off" placeholder="Ej.: Madre">
+          <div class="chips">
+            <button type="button" data-par="Madre">Madre</button>
+            <button type="button" data-par="Padre">Padre</button>
+            <button type="button" data-par="Abuelo/a">Abuelo/a</button>
+            <button type="button" data-par="Tutor/a">Tutor/a</button>
+          </div></label>
+        <label class="campo"><span class="lbl">2.3 Cédula de identidad</span>
+          <input type="text" name="rutApoderado" data-rut inputmode="text" autocomplete="off" placeholder="12.345.678-9" maxlength="12">
+          <small class="ayuda" data-ayuda-rut></small></label>
+        <label class="campo"><span class="lbl">2.4 Teléfono <i>*</i></span>
+          <input type="tel" name="telApoderado" inputmode="tel" autocomplete="tel" placeholder="+56 9 1234 5678" required></label>
+        <label class="campo"><span class="lbl">2.5 Correo electrónico</span>
+          <input type="email" name="correoApoderado" inputmode="email" autocomplete="email" placeholder="correo@ejemplo.cl"></label>
       </div>
+
+      <div class="titulo-sec"><div class="num">3</div><h2>Información clínica/médica del estudiante</h2></div>
+      <div class="tarjeta campos">
+        <fieldset class="campo"><legend class="lbl">3.1 ¿Padece alguna enfermedad crónica o patológica?</legend>
+          <div class="opciones">
+            <label class="op"><input type="radio" name="enfermedad" value="No"><span>No</span></label>
+            <label class="op"><input type="radio" name="enfermedad" value="Sí"><span>Sí</span></label>
+          </div>
+          <input type="text" name="enfermedadCual" class="cual" placeholder="¿Cuál?" hidden>
+        </fieldset>
+        <fieldset class="campo"><legend class="lbl">3.2 ¿Toma algún medicamento de forma permanente?</legend>
+          <div class="opciones">
+            <label class="op"><input type="radio" name="medicamento" value="No"><span>No</span></label>
+            <label class="op"><input type="radio" name="medicamento" value="Sí"><span>Sí</span></label>
+          </div>
+          <input type="text" name="medicamentoCual" class="cual" placeholder="¿Cuál?" hidden>
+        </fieldset>
+      </div>
+
+      <div class="titulo-sec"><div class="num">4</div><h2>Autorización</h2></div>
+      <div class="tarjeta campos">
+        <div class="autorizacion"><p>Mediante el siguiente mandato, autorizo a mi hijo/hija a participar activamente de la Escuela de fútbol Deportivo Liceo de la comuna de Paillaco. Para lo anterior doy fe, de que la salud de mi hijo(a) y/o Pupilo(a) es compatible con la actividad que se realizará y libero de toda responsabilidad a la escuela de fútbol Deportivo Liceo y su personal a cargo, en caso de que ocurra algún evento durante el desarrollo de los entrenamiento y/o partidos.</p><p>Referido a la difusión del proyecto, autorizó a los profesores y unidad de la escuela a utilizar la imagen, testimonio, y/o voz de mi hijo(a) y/o Pupilo(a) en material o soporte de difusión que elabore dicha unidad (página web, publicaciones redes sociales, etc). Cabe resaltar que esta difusión tiene como objetivo difundir la oferta programática que nuestra escuela de fútbol brinda a la comunidad en general en materia deportiva, por lo que ella no afectará en ningún caso la integridad moral ni física de los menores.</p></div>
+        <fieldset class="campo"><legend class="sr">Autorización</legend>
+          <div class="opciones">
+            <label class="op"><input type="radio" name="autoriza" value="Autorizo" required><span>Autorizo</span></label>
+            <label class="op"><input type="radio" name="autoriza" value="No autorizo"><span>No autorizo</span></label>
+          </div>
+        </fieldset>
+      </div>
+
+      <p class="error-general" id="errorGeneral" role="alert" hidden></p>
+      <button class="btn btn-amarillo enviar" type="submit" id="btnEnviar">Enviar ficha de matrícula</button>
+      <p class="guardado" id="guardado">Lo que escribes se guarda en este celular hasta que envíes la ficha.</p>
+    </form>
+
+    <div class="tarjeta ok" id="ok">
+      <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h2>¡Ficha enviada!</h2>
+      <p id="okTexto">Recibimos la matrícula. Si tienes dudas sobre valores u horarios, escríbenos por WhatsApp.</p>
+      <a class="btn btn-verde" id="wspOk" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.7.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+        Escribir por WhatsApp
+      </a>
+      <button class="btn btn-borde" id="otro" type="button">Inscribir a otro jugador</button>
     </div>
   </div>
 </section>
@@ -217,47 +333,211 @@
 </nav>
 
 <script>
-  // Configuración
+  // Formulario de Google donde llegan las respuestas
   const FORM_ID = '1FAIpQLSfo1zprZU7fuCPZ7zpG8AOT1OPbcIyxkgEKnmf8gP33trZ2SA';
-  const FORM_URL = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/viewform';
+  const FORM_ACTION = 'https://docs.google.com/forms/d/e/' + FORM_ID + '/formResponse';
   const WSP = '56959702063';
 
+  // Campo de la app -> pregunta del formulario de Google
+  const ENTRY = {
+      "email": "emailAddress",
+      "nombre": "entry.579902664",
+      "nacimiento": "entry.1140703891",
+      "edad": "entry.1579112208",
+      "sexo": "entry.253013751",
+      "rut": "entry.821884959",
+      "direccion": "entry.322700660",
+      "telefono": "entry.729991281",
+      "apoderado": "entry.522988367",
+      "parentesco": "entry.1496596161",
+      "rutApoderado": "entry.1344336791",
+      "telApoderado": "entry.940614369",
+      "correoApoderado": "entry.229097113",
+      "enfermedad": "entry.240773186",
+      "medicamento": "entry.1693428465",
+      "autoriza": "entry.2078405077"
+  };
+
   const $ = id => document.getElementById(id);
-  const iframe = $('formulario'), cargando = $('cargando'), ok = $('ok'), alterno = $('alterno');
+  const form = $('form'), ok = $('ok'), errorGeneral = $('errorGeneral'), btnEnviar = $('btnEnviar');
+  const CLAVE = 'matricula2026_borrador';
 
   const wsp = texto => 'https://wa.me/' + WSP + '?text=' + encodeURIComponent(texto);
   $('wspPie').href = wsp('Hola, tengo una consulta sobre la matrícula 2026 de la Escuela de Fútbol Deportivo Liceo.');
   $('wspBarra').href = $('wspPie').href;
-  $('wspOk').href = wsp('Hola, acabo de enviar la ficha de matrícula 2026 de la Escuela de Fútbol Deportivo Liceo.');
-  $('linkCompleto').href = FORM_URL;
 
-  // La primera carga es la ficha; la siguiente es la confirmación de envío de Google
-  let cargas = 0;
-  function cargarFicha(){
-    cargas = 0;
-    ok.classList.remove('ver');
-    iframe.style.display = 'block';
-    alterno.style.display = 'block';
-    cargando.style.display = 'grid';
-    iframe.src = FORM_URL + '?embedded=true&t=' + Date.now();
+  // Fecha máxima: hoy
+  const hoy = new Date();
+  form.nacimiento.max = hoy.toISOString().slice(0, 10);
+
+  // ---------- RUT ----------
+  function limpiarRut(v){ return (v || '').replace(/[^0-9kK]/g, '').toUpperCase(); }
+  function formatearRut(v){
+    const c = limpiarRut(v); if (c.length < 2) return c;
+    const cuerpo = c.slice(0, -1), dv = c.slice(-1);
+    return cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + dv;
   }
-  iframe.addEventListener('load', () => {
-    if (!iframe.src) return;
-    cargas++;
-    if (cargas === 1) { cargando.style.display = 'none'; return; }
-    iframe.style.display = 'none';
-    alterno.style.display = 'none';
-    ok.classList.add('ver');
-    $('ficha').scrollIntoView({behavior:'smooth', block:'start'});
+  function rutValido(v){
+    const c = limpiarRut(v); if (c.length < 8) return false;
+    const cuerpo = c.slice(0, -1), dv = c.slice(-1);
+    if (!/^\d+$/.test(cuerpo)) return false;
+    let suma = 0, m = 2;
+    for (let i = cuerpo.length - 1; i >= 0; i--) { suma += +cuerpo[i] * m; m = m === 7 ? 2 : m + 1; }
+    const r = 11 - (suma % 11);
+    return dv === (r === 11 ? '0' : r === 10 ? 'K' : String(r));
+  }
+  form.querySelectorAll('[data-rut]').forEach(inp => {
+    const ayuda = inp.parentElement.querySelector('[data-ayuda-rut]');
+    const revisar = () => {
+      if (!inp.value.trim()) { ayuda.textContent = ''; ayuda.className = 'ayuda'; return; }
+      const okRut = rutValido(inp.value);
+      ayuda.textContent = okRut ? 'RUT válido' : 'Revisa el RUT (número y dígito verificador)';
+      ayuda.className = 'ayuda ' + (okRut ? 'bien' : 'mal');
+    };
+    inp.addEventListener('input', () => { inp.value = formatearRut(inp.value); revisar(); });
+    inp.addEventListener('blur', revisar);
   });
-  $('otro').addEventListener('click', () => { cargarFicha(); $('ficha').scrollIntoView({behavior:'smooth'}); });
-  cargarFicha();
+
+  // ---------- Edad automática ----------
+  let edadManual = false;
+  form.edad.addEventListener('input', () => { edadManual = form.edad.value !== ''; });
+  form.nacimiento.addEventListener('change', () => {
+    if (edadManual || !form.nacimiento.value) return;
+    const n = new Date(form.nacimiento.value + 'T12:00:00');
+    let e = hoy.getFullYear() - n.getFullYear();
+    if (hoy.getMonth() < n.getMonth() || (hoy.getMonth() === n.getMonth() && hoy.getDate() < n.getDate())) e--;
+    if (e >= 0 && e < 100) form.edad.value = e;
+    guardar();
+  });
+
+  // ---------- Parentesco rápido ----------
+  form.querySelectorAll('[data-par]').forEach(b => b.addEventListener('click', () => {
+    form.parentesco.value = b.dataset.par; guardar();
+  }));
+
+  // ---------- Sí / No con "¿cuál?" ----------
+  [['enfermedad', 'enfermedadCual'], ['medicamento', 'medicamentoCual']].forEach(([n, c]) => {
+    const actualizar = () => {
+      const si = form[n].value === 'Sí';
+      form[c].hidden = !si;
+      if (si) form[c].focus({preventScroll: true});
+    };
+    form.querySelectorAll('input[name="' + n + '"]').forEach(r => r.addEventListener('change', actualizar));
+  });
+
+  // ---------- Borrador en el celular ----------
+  function datos(){
+    const d = {};
+    new FormData(form).forEach((v, k) => { d[k] = typeof v === 'string' ? v.trim() : v; });
+    return d;
+  }
+  function guardar(){
+    try { localStorage.setItem(CLAVE, JSON.stringify(datos())); } catch (e) {}
+  }
+  function restaurar(){
+    let d = null;
+    try { d = JSON.parse(localStorage.getItem(CLAVE) || 'null'); } catch (e) {}
+    if (!d) return;
+    Object.entries(d).forEach(([k, v]) => {
+      const el = form.elements[k]; if (!el) return;
+      if (el instanceof RadioNodeList) { el.forEach(r => { r.checked = r.value === v; }); }
+      else el.value = v;
+    });
+    if (d.edad) edadManual = true;
+    form.enfermedadCual.hidden = d.enfermedad !== 'Sí';
+    form.medicamentoCual.hidden = d.medicamento !== 'Sí';
+    form.querySelectorAll('[data-rut]').forEach(i => i.dispatchEvent(new Event('blur')));
+  }
+  form.addEventListener('input', guardar);
+  form.addEventListener('change', guardar);
+  restaurar();
+
+  // ---------- Validación ----------
+  function marcar(el, mensaje){
+    const campo = el.closest('.campo');
+    campo.classList.add('error');
+    let m = campo.querySelector('.msg');
+    if (!m) { m = document.createElement('small'); m.className = 'msg'; campo.appendChild(m); }
+    m.textContent = mensaje;
+  }
+  function validar(){
+    form.querySelectorAll('.campo.error').forEach(c => { c.classList.remove('error'); const m = c.querySelector('.msg'); if (m) m.remove(); });
+    const errores = [];
+    const req = (name, msg) => { const el = form.elements[name]; if (!String(el.value || '').trim()) { marcar(el[0] || el, msg); errores.push(el[0] || el); } };
+    req('email', 'Escribe un correo.');
+    if (form.email.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.value.trim())) { marcar(form.email, 'Revisa el correo.'); errores.push(form.email); }
+    req('nombre', 'Escribe el nombre del estudiante.');
+    req('apoderado', 'Escribe el nombre del apoderado.');
+    req('telApoderado', 'Escribe un teléfono de contacto.');
+    if (form.correoApoderado.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correoApoderado.value.trim())) { marcar(form.correoApoderado, 'Revisa el correo.'); errores.push(form.correoApoderado); }
+    req('autoriza', 'Marca una opción.');
+    return errores;
+  }
+  form.addEventListener('input', e => {
+    const c = e.target.closest('.campo.error');
+    if (c) { c.classList.remove('error'); const m = c.querySelector('.msg'); if (m) m.remove(); }
+  });
+
+  // ---------- Envío ----------
+  function respuesta(d){
+    const fecha = d.nacimiento ? d.nacimiento.split('-').reverse().join('-') : '';
+    const siNo = (v, cual) => v === 'Sí' ? ('Sí' + (cual ? ', ' + cual : '')) : (v || '');
+    return {
+      nombre: d.nombre, nacimiento: fecha, edad: d.edad, sexo: d.sexo || '', rut: d.rut,
+      direccion: d.direccion, telefono: d.telefono, apoderado: d.apoderado, parentesco: d.parentesco,
+      rutApoderado: d.rutApoderado, telApoderado: d.telApoderado, correoApoderado: d.correoApoderado,
+      enfermedad: siNo(d.enfermedad, d.enfermedadCual), medicamento: siNo(d.medicamento, d.medicamentoCual),
+      autoriza: d.autoriza || ''
+    };
+  }
+  function mostrarError(t){ errorGeneral.textContent = t; errorGeneral.hidden = false; errorGeneral.scrollIntoView({behavior: 'smooth', block: 'center'}); }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    errorGeneral.hidden = true;
+    const errores = validar();
+    if (errores.length) {
+      errores[0].closest('.campo').scrollIntoView({behavior: 'smooth', block: 'center'});
+      return;
+    }
+    if (Object.values(ENTRY).some(v => !v)) { mostrarError('Vista previa: la ficha todavía no está conectada al formulario de Google, así que no se envió.'); return; }
+    if (!navigator.onLine) { mostrarError('No hay conexión. Tu ficha quedó guardada en este celular: envíala cuando tengas señal.'); return; }
+
+    const d = datos(), r = respuesta(d);
+    const params = new URLSearchParams();
+    params.append(ENTRY.email, d.email);
+    Object.entries(r).forEach(([k, v]) => { if (ENTRY[k] && v !== '') params.append(ENTRY[k], v); });
+    params.append('fvv', '1');
+    params.append('pageHistory', '0');
+
+    btnEnviar.disabled = true; btnEnviar.textContent = 'Enviando…';
+    try {
+      await fetch(FORM_ACTION, {method: 'POST', mode: 'no-cors', body: params});
+      try { localStorage.removeItem(CLAVE); } catch (e) {}
+      $('okTexto').textContent = 'Recibimos la matrícula de ' + d.nombre + '. Si tienes dudas sobre valores u horarios, escríbenos por WhatsApp.';
+      $('wspOk').href = wsp('Hola, acabo de enviar la ficha de matrícula 2026 de ' + d.nombre + ' en la Escuela de Fútbol Deportivo Liceo.');
+      form.hidden = true; ok.classList.add('ver');
+      $('ficha').scrollIntoView({behavior: 'smooth', block: 'start'});
+    } catch (err) {
+      mostrarError('No se pudo enviar. Revisa tu conexión e inténtalo de nuevo; tus datos siguen guardados.');
+    } finally {
+      btnEnviar.disabled = false; btnEnviar.textContent = 'Enviar ficha de matrícula';
+    }
+  });
+
+  $('otro').addEventListener('click', () => {
+    form.reset(); edadManual = false;
+    form.enfermedadCual.hidden = true; form.medicamentoCual.hidden = true;
+    form.querySelectorAll('.ayuda').forEach(a => { a.textContent = ''; a.className = 'ayuda'; });
+    ok.classList.remove('ver'); form.hidden = false;
+    $('ficha').scrollIntoView({behavior: 'smooth', block: 'start'});
+  });
 
   // Oculta la barra inferior mientras se completa la ficha
   const flotante = $('flotante');
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(([e]) => flotante.classList.toggle('oculta', e.isIntersecting), {threshold:0})
-      .observe($('marco'));
+    new IntersectionObserver(([e]) => flotante.classList.toggle('oculta', e.isIntersecting), {threshold: 0})
+      .observe($('ficha'));
   }
 </script>
 </body>
