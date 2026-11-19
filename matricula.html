@@ -111,6 +111,9 @@
   .enlace svg{width:24px;height:24px;flex:none;color:var(--amarillo)}
   .enlace b{display:block;font-weight:600;font-size:16px}
   .enlace span{font-size:14px;opacity:.8;word-break:break-all}
+  .flex1{flex:1;min-width:0}
+  .enlaces > .enlace{min-width:0;overflow:hidden}
+  .enlace span.una-linea{display:block;white-space:nowrap;word-break:normal;font-size:14px;letter-spacing:-.01em}
   .pie{margin-top:26px;font-size:13px;opacity:.7;text-align:center}
 
   /* Barra inferior */
@@ -314,7 +317,7 @@
       </a>
       <a class="enlace" href="mailto:escueladefutboldeportivoliceo@gmail.com">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg>
-        <div><b>Correo</b><span>escueladefutboldeportivoliceo@gmail.com</span></div>
+        <div class="flex1"><b>Correo</b><span class="una-linea">escueladefutboldeportivoliceo@gmail.com</span></div>
       </a>
       <a class="enlace" href="https://escueladefutboldeportivoliceo.github.io/" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
@@ -539,6 +542,18 @@
     new IntersectionObserver(([e]) => flotante.classList.toggle('oculta', e.isIntersecting), {threshold: 0})
       .observe($('ficha'));
   }
+
+  // Correo en una sola línea: ajusta el tamaño de letra al ancho disponible
+  function ajustarLinea(){
+    document.querySelectorAll('.una-linea').forEach(el => {
+      el.style.fontSize = '14px';
+      let t = 14;
+      while (el.scrollWidth > el.clientWidth && t > 9) { t -= 0.25; el.style.fontSize = t + 'px'; }
+    });
+  }
+  ajustarLinea();
+  window.addEventListener('resize', ajustarLinea);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustarLinea);
 </script>
 </body>
 </html>
