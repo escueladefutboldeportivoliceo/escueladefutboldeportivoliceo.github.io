@@ -318,7 +318,7 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
 .car-cab a{font-size:14px;font-weight:800;color:var(--amarillo);text-decoration:none}
 .carrusel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-radius:22px;border:2px solid rgba(255,255,255,.7);box-shadow:0 18px 36px -16px rgba(0,0,0,.55)}
 .carrusel::-webkit-scrollbar{display:none}
-.sl{flex:0 0 100%;min-width:0;scroll-snap-align:start;position:relative;display:block;height:280px;overflow:hidden;color:#fff;text-decoration:none;background:linear-gradient(160deg,#2b8a47,var(--verde-osc))}
+.sl{flex:0 0 100%;min-width:0;scroll-snap-align:start;position:relative;display:block;min-height:280px;overflow:hidden;color:#fff;text-decoration:none;background:linear-gradient(160deg,#2b8a47,var(--verde-osc))}
 .sl.t-aviso{background:linear-gradient(160deg,#ffe07a,#e0ab18);color:#2a2100}
 .sl.t-partido,.sl.t-evento{background:linear-gradient(160deg,#24372b,#0c1610)}
 .sl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -335,6 +335,8 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
 .car-puntos{display:flex;justify-content:center;gap:7px;margin-top:12px}
 .car-puntos button{width:8px;height:8px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.4);transition:width .3s,background .3s;cursor:pointer}
 .car-puntos button.on{width:24px;background:var(--amarillo)}
+.sl-nos .sl-txt{-webkit-line-clamp:3}
+.sl-nos .sl-fecha{color:var(--amarillo);opacity:1;font-weight:900}
 
 </style>
 </head>
@@ -367,12 +369,6 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
     <a href="#/documentos" data-boton="documentos" class="b t-claro" data-dyn="documentos" hidden><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg></span><b>Documentos</b><span class="bs">Reglamentos y más</span></a>
     <a href="#/contacto" data-boton="contacto" class="b t-wsp ancho"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13.5h5"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13.5h5"/></svg></span><b>Contacto</b><span class="bs">WhatsApp, correo y redes sociales</span></a>
   </nav>
-  <a class="quienes" href="#/nosotros">
-    <div class="et">Quiénes somos</div>
-    <div class="q"><b>🎯 Misión</b><p>Ser un referente en la formación y el desarrollo de la práctica del deporte, a través de la innovación pedagógica, la colaboración y el fútbol como herramienta educativa para la inclusión social y la salud física y mental de nuestros deportistas.</p></div>
-    <div class="q"><b>🔭 Visión</b><p>Impulsar y promover el deporte en las comunidades, para contribuir al desarrollo integral y una mejor calidad de vida para nuestros niños y jóvenes, generando motivación en el colectivo y logrando formar deportistas con valores sociales y culturales de excelencia para nuestra sociedad.</p></div>
-    <span class="mas">Leer misión, visión y objetivos ›</span>
-  </a>
 </div>
 </div>
 
@@ -591,8 +587,12 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
   function pintarCarrusel(lista) {
     const ai = document.getElementById('avisosInicio');
     clearInterval(timerCar);
-    if (!lista.length) { ai.innerHTML = ''; return; }
+    const fq = document.querySelector('#galeria-fotos img[data-fija="1"]') || document.querySelector('#galeria-fotos img');
+    const fija = `<a class="sl con-img sl-nos" href="#/nosotros">${fq ? `<img src="${fq.src}" alt="">` : ''}
+        <span class="sl-info"><em>⚽ Quiénes somos</em><b>Escuela de Fútbol Deportivo Liceo</b><span class="sl-txt"><strong>Misión:</strong> ser un referente en la formación y el desarrollo de la práctica del deporte, a través de la innovación pedagógica, la colaboración y el fútbol como herramienta educativa para la inclusión social y la salud física y mental de nuestros deportistas.</span><span class="sl-fecha">Leer misión, visión y objetivos ›</span></span></a>`;
+    lista = lista.concat([null]);
     const sl = lista.map(p => {
+      if (!p) return fija;
       const T = TIPOS[p.tipo] || TIPOS.noticia;
       let cuando = fecha(p.created_at);
       if (esEv(p) && p.fecha_evento) cuando = diaSemana(p.fecha_evento).replace(/^./, c => c.toUpperCase()) + ' ' + fecha(p.fecha_evento) + (p.hora ? ' · ' + h(p.hora) + ' h' : '');
@@ -620,6 +620,7 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
     const dest = vis.filter(p => p.destacado && !(esEv(p) && p.fecha_evento && p.fecha_evento < hoy));
     const prox = vis.filter(p => !p.destacado && esEv(p) && p.fecha_evento && p.fecha_evento >= hoy).sort((a, b) => (a.fecha_evento + (a.hora || '')).localeCompare(b.fecha_evento + (b.hora || '')));
     const resto = vis.filter(p => !dest.includes(p) && !prox.includes(p));
+    pintarCarrusel([...dest, ...prox, ...resto].slice(0, 10));
     if (!dest.length && !prox.length && !resto.length) return;
     let html = '<h2>Novedades</h2>';
     html += dest.map(p => `<div class="dest" data-p="${p.id}"><div class="et">${(TIPOS[p.tipo] || TIPOS.noticia)[1]} ${(TIPOS[p.tipo] || TIPOS.noticia)[0]} importante</div><b>${h(p.titulo)}</b>${p.texto ? `<p>${h(p.texto)}</p>` : ''}${datosEv(p).length && !p.texto ? `<p>${datosEv(p).join(' · ')}</p>` : ''}<div class="mas">Ver más</div></div>`).join('');
@@ -638,8 +639,6 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
     const s = document.getElementById('novedades');
     s.innerHTML = html; mostrarMenu('novedades');
     s.querySelectorAll('[data-p]').forEach(el => el.onclick = () => irA(el.dataset.p));
-    // Carrusel de publicaciones en el inicio
-    pintarCarrusel([...dest, ...prox, ...resto].slice(0, 10));
     const vm = document.getElementById('verMasNov');
     if (vm) vm.onclick = () => { s.querySelectorAll('[data-extra]').forEach(x => x.hidden = false); vm.remove(); };
   }
@@ -801,6 +800,7 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
   fotosBotones();
   ponerVolver();
 
+  pintarCarrusel([]);
   const pedir = q => fetch(URL_SB + '/rest/v1/' + q, { headers: { apikey: KEY } }).then(r => r.ok ? r.json() : []).catch(() => []);
   Promise.all([
     pedir('web_publicaciones?select=*&publicado=eq.true&order=destacado.desc,created_at.desc&limit=80'),
