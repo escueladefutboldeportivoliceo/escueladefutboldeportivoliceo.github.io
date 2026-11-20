@@ -48,7 +48,7 @@ header.portada:after{content:"";position:absolute;left:-40px;top:120px;width:26p
 .portada .b3{width:200px;height:200px;background:#2e8b4a;left:30%;bottom:120px;animation-delay:-6s}
 @keyframes flota{0%,100%{transform:translate(0,0)}50%{transform:translate(18px,-22px)}}
 .fondo-foto{position:absolute;inset:-40px;background:center/cover no-repeat;filter:blur(18px) saturate(1.4);opacity:.28;mix-blend-mode:luminosity;transform:scale(1.1);pointer-events:none}
-.portada>*:not(.fondo-foto):not(.burbuja):not(.ola){position:relative;z-index:1}
+.portada>*:not(.fondo-foto):not(.burbuja):not(.ola):not(.balon){position:relative;z-index:1}
 .portada .fondo-foto{position:absolute;z-index:0}
 .anillo{width:150px;height:150px;margin:0 auto;border-radius:50%;padding:7px;position:relative;display:grid;place-items:center}
 .anillo:before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#F2C230,#ffffff,#1e6b33,#ffffff,#F2C230);animation:gira 6s linear infinite;box-shadow:0 0 30px rgba(242,194,48,.55)}
@@ -337,6 +337,45 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
 .car-puntos button.on{width:24px;background:var(--amarillo)}
 .sl-nos .sl-txt{-webkit-line-clamp:3}
 .sl-nos .sl-fecha{color:var(--amarillo);opacity:1;font-weight:900}
+
+/* Movimiento al desplazar (parallax) y balones flotantes */
+header.portada{--sy:0}
+header.portada:before{transform:translateY(calc(var(--sy) * .45px)) rotate(20deg)}
+header.portada:after{transform:translateY(calc(var(--sy) * -.25px)) rotate(20deg)}
+.portada .anillo{transform:translateY(calc(var(--sy) * .3px)) scale(calc(1 - var(--sy) * .0005));will-change:transform}
+.portada .pildora,.portada h1{transform:translateY(calc(var(--sy) * .18px))}
+.portada .lema{transform:translateY(calc(var(--sy) * .1px))}
+.balon{position:absolute;z-index:0;pointer-events:none;will-change:transform}
+.balon i{display:block;width:100%;height:100%;filter:drop-shadow(0 14px 18px rgba(0,0,0,.35))}
+.balon svg{display:block;width:100%;height:100%}
+.bl1{width:88px;height:88px;right:-24px;top:112px;transform:translate(calc(var(--sy) * .1px),calc(var(--sy) * -.45px)) rotate(calc(var(--sy) * .6deg))}
+.bl1 i{animation:entraBalon 1.4s cubic-bezier(.2,.8,.2,1) both,flotaBalon 5s ease-in-out 1.4s infinite}
+.bl2{width:44px;height:44px;left:20px;top:70px;transform:translate(calc(var(--sy) * -.1px),calc(var(--sy) * -.7px)) rotate(calc(var(--sy) * -.9deg))}
+.bl2 i{animation:entraBalon2 1.6s cubic-bezier(.2,.8,.2,1) .2s both,flotaBalon 4s ease-in-out 1.8s infinite}
+.bl3{width:34px;height:34px;left:-6px;top:418px;opacity:.95;transform:translate(calc(var(--sy) * -.2px),calc(var(--sy) * -.3px)) rotate(calc(var(--sy) * 1.2deg))}
+.bl3 i{animation:entraBalon2 1.6s cubic-bezier(.2,.8,.2,1) .4s both,flotaBalon 6s ease-in-out 2s infinite}
+@keyframes entraBalon{from{transform:translate(160px,-120px) rotate(300deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes entraBalon2{from{transform:translate(-120px,-80px) rotate(-260deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes flotaBalon{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.portada .anillo{animation:entraLogo .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes entraLogo{from{opacity:0;scale:.6}to{opacity:1;scale:1}}
+.portada h1{animation:entraArriba .8s cubic-bezier(.2,.8,.2,1) .15s both}
+.portada .pildora{animation:entraArriba .8s cubic-bezier(.2,.8,.2,1) .05s both}
+.portada .lema{animation:entraArriba .8s cubic-bezier(.2,.8,.2,1) .25s both}
+#avisosInicio{animation:entraArriba .9s cubic-bezier(.2,.8,.2,1) .35s both}
+@keyframes entraArriba{from{opacity:0;translate:0 30px}to{opacity:1;translate:0 0}}
+html,body{overflow-x:clip}
+/* Aparición al bajar */
+.rv{opacity:0;translate:0 46px;scale:.94;transition:opacity .7s ease,translate .8s cubic-bezier(.2,.8,.2,1),scale .8s cubic-bezier(.2,.8,.2,1);transition-delay:var(--d,0s)}
+.rv.vis{opacity:1;translate:0 0;scale:1}
+.botones-inicio .b.rv:nth-child(even){translate:40px 30px}
+.botones-inicio .b.rv.vis:nth-child(even){translate:0 0}
+.botones-inicio .b img,.botones-inicio .b .fondo{transition:scale 1.2s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){
+  header.portada{--sy:0!important}
+  .balon i,.portada .anillo,.portada h1,.portada .pildora,.portada .lema,#avisosInicio{animation:none!important}
+  .rv{opacity:1!important;translate:none!important;scale:none!important;transition:none!important}
+}
 
 </style>
 </head>
@@ -801,6 +840,19 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
   ponerVolver();
 
   pintarCarrusel([]);
+  // Movimiento al desplazar: parallax de la portada y aparición de bloques
+  (function () {
+    const port = document.querySelector('header.portada');
+    let pend = false;
+    const mover = () => { pend = false; const y = Math.min(window.scrollY, 900); if (port) port.style.setProperty('--sy', document.getElementById('inicio').classList.contains('activa') ? y : 0); };
+    window.addEventListener('scroll', () => { if (!pend) { pend = true; requestAnimationFrame(mover); } }, { passive: true });
+    const sel = '.explora, .botones-inicio .b, .vista:not(#inicio) > *:not(.volver), footer > *';
+    const marcar = () => document.querySelectorAll(sel).forEach(el => { if (!el.classList.contains('rv')) { el.classList.add('rv'); io ? io.observe(el) : el.classList.add('vis'); } });
+    const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .08 }) : null;
+    document.querySelectorAll('.botones-inicio .b').forEach((b, i) => b.style.setProperty('--d', (i % 2) * 0.08 + 's'));
+    marcar();
+    new MutationObserver(() => marcar()).observe(document.body, { childList: true, subtree: true });
+  })();
   const pedir = q => fetch(URL_SB + '/rest/v1/' + q, { headers: { apikey: KEY } }).then(r => r.ok ? r.json() : []).catch(() => []);
   Promise.all([
     pedir('web_publicaciones?select=*&publicado=eq.true&order=destacado.desc,created_at.desc&limit=80'),
