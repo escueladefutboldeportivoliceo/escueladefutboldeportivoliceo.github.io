@@ -312,25 +312,29 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
 
 /* Noticias deslizables en la portada */
 #avisosInicio:empty{display:none}
-#avisosInicio{margin:24px -16px 0;text-align:left}
-.car-cab{display:flex;align-items:center;justify-content:space-between;padding:0 18px;margin-bottom:10px}
+#avisosInicio{max-width:420px;margin:26px auto 0;text-align:left}
+.car-cab{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px}
 .car-cab span{font-size:13px;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;color:#fff}
 .car-cab a{font-size:14px;font-weight:800;color:var(--amarillo);text-decoration:none}
-.carrusel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 16px 14px;scroll-padding:0 16px}
+.carrusel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-radius:22px;border:2px solid rgba(255,255,255,.7);box-shadow:0 18px 36px -16px rgba(0,0,0,.55)}
 .carrusel::-webkit-scrollbar{display:none}
-.sl{flex:0 0 44%;max-width:190px;min-width:0;scroll-snap-align:start;position:relative;display:block;aspect-ratio:4/5;border-radius:20px;overflow:hidden;color:#fff;text-decoration:none;background:linear-gradient(160deg,#2b8a47,var(--verde-osc));border:2px solid rgba(255,255,255,.55);box-shadow:0 12px 24px -12px rgba(0,0,0,.55)}
+.sl{flex:0 0 100%;min-width:0;scroll-snap-align:start;position:relative;display:block;height:280px;overflow:hidden;color:#fff;text-decoration:none;background:linear-gradient(160deg,#2b8a47,var(--verde-osc))}
 .sl.t-aviso{background:linear-gradient(160deg,#ffe07a,#e0ab18);color:#2a2100}
 .sl.t-partido,.sl.t-evento{background:linear-gradient(160deg,#24372b,#0c1610)}
 .sl img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.sl.con-img:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.88) 100%)}
-.sl-ico{position:absolute;left:14px;top:14px;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:28px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.sin-img:before{content:"";position:absolute;width:140px;height:140px;border-radius:50%;right:-50px;top:-40px;background:rgba(255,255,255,.12)}
-.sl-info{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:12px 12px 13px;display:flex;flex-direction:column;gap:5px}
-.sl-info em{align-self:flex-start;font-style:normal;font-size:10.5px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;background:var(--amarillo);color:#2a2100;padding:4px 9px;border-radius:999px}
+.sl.con-img:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.3) 40%,rgba(0,0,0,.9) 100%)}
+.sl.con-img .sl-info b,.sl.con-img .sl-txt,.sl.con-img .sl-fecha{text-shadow:0 2px 10px rgba(0,0,0,.6)}
+.sl-emoji{position:absolute;right:-10px;top:-14px;font-size:130px;opacity:.2;line-height:1}
+.sin-img:before{content:"";position:absolute;width:200px;height:200px;border-radius:50%;left:-60px;bottom:-90px;background:rgba(255,255,255,.1)}
+.sl-info{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:18px 18px 20px;display:flex;flex-direction:column;gap:6px}
+.sl-info em{align-self:flex-start;font-style:normal;font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;background:var(--amarillo);color:#2a2100;padding:5px 11px;border-radius:999px}
 .sl.t-aviso .sl-info em{background:#12341a;color:#fff}
-.sl-info b{font-size:15.5px;font-weight:900;line-height:1.15;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.sl.con-img .sl-info b{text-shadow:0 2px 8px rgba(0,0,0,.6)}
-.sl-fecha{font-size:12px;font-weight:700;opacity:.85}
+.sl-info b{font-size:22px;font-weight:900;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sl-txt{font-size:15px;line-height:1.35;opacity:.92;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sl-fecha{font-size:13px;font-weight:700;opacity:.85}
+.car-puntos{display:flex;justify-content:center;gap:7px;margin-top:12px}
+.car-puntos button{width:8px;height:8px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.4);transition:width .3s,background .3s;cursor:pointer}
+.car-puntos button.on{width:24px;background:var(--amarillo)}
 
 </style>
 </head>
@@ -591,20 +595,22 @@ footer .adm{display:inline-block;margin-top:10px;font-size:12px;color:var(--gris
     const sl = lista.map(p => {
       const T = TIPOS[p.tipo] || TIPOS.noticia;
       let cuando = fecha(p.created_at);
-      if (esEv(p) && p.fecha_evento) { const [, m, d] = p.fecha_evento.split('-').map(Number); cuando = diaSemana(p.fecha_evento).slice(0, 3) + ' ' + d + ' ' + MES[m - 1] + (p.hora ? ' · ' + h(p.hora) : ''); }
+      if (esEv(p) && p.fecha_evento) cuando = diaSemana(p.fecha_evento).replace(/^./, c => c.toUpperCase()) + ' ' + fecha(p.fecha_evento) + (p.hora ? ' · ' + h(p.hora) + ' h' : '');
+      const txt = p.texto ? h(p.texto) : (p.lugar ? '📍 ' + h(p.lugar) : '');
       return `<a class="sl${p.imagen_url ? ' con-img' : ' sin-img t-' + h(p.tipo)}" href="#/novedad/${p.id}">
-        ${p.imagen_url ? `<img src="${h(p.imagen_url)}" alt="" loading="lazy">` : `<span class="sl-ico" aria-hidden="true">${T[1]}</span>`}
-        <span class="sl-info"><em>${p.destacado ? '❗ ' : ''}${T[0]}</em><b>${h(p.titulo)}</b><span class="sl-fecha">${cuando}</span></span></a>`;
+        ${p.imagen_url ? `<img src="${h(p.imagen_url)}" alt="" loading="lazy">` : `<span class="sl-emoji" aria-hidden="true">${T[1]}</span>`}
+        <span class="sl-info"><em>${T[1]} ${p.destacado ? T[0] + ' importante' : T[0]}</em><b>${h(p.titulo)}</b>${txt ? `<span class="sl-txt">${txt}</span>` : ''}<span class="sl-fecha">${cuando}</span></span></a>`;
     }).join('');
-    ai.innerHTML = `<div class="car-cab"><span>📰 Noticias</span><a href="#/novedades">Ver todas ›</a></div><div class="carrusel" id="carrusel">${sl}</div>`;
-    const car = document.getElementById('carrusel');
-    const paso = () => { const c = car.querySelector('.sl'); return c ? c.offsetWidth + 12 : car.clientWidth; };
-    const avanzar = () => {
-      if (document.hidden || !document.getElementById('inicio').classList.contains('activa')) return;
-      const fin = car.scrollLeft + car.clientWidth >= car.scrollWidth - 4;
-      car.scrollTo({ left: fin ? 0 : car.scrollLeft + paso(), behavior: 'smooth' });
-    };
-    const reiniciar = () => { clearInterval(timerCar); if (car.scrollWidth > car.clientWidth + 4) timerCar = setInterval(avanzar, 3500); };
+    ai.innerHTML = `<div class="car-cab"><span>📰 Noticias</span><a href="#/novedades">Ver todas ›</a></div>
+      <div class="carrusel" id="carrusel">${sl}</div>
+      ${lista.length > 1 ? `<div class="car-puntos">${lista.map((_, i) => `<button type="button" aria-label="Noticia ${i + 1}"${i ? '' : ' class="on"'}></button>`).join('')}</div>` : ''}`;
+    const car = document.getElementById('carrusel'), pts = [...ai.querySelectorAll('.car-puntos button')];
+    const actual = () => Math.round(car.scrollLeft / car.clientWidth);
+    const ir = i => car.scrollTo({ left: i * car.clientWidth, behavior: 'smooth' });
+    car.addEventListener('scroll', () => { const i = actual(); pts.forEach((b, k) => b.classList.toggle('on', k === i)); }, { passive: true });
+    pts.forEach((b, i) => b.onclick = () => { ir(i); reiniciar(); });
+    const avanzar = () => { if (document.hidden || !document.getElementById('inicio').classList.contains('activa')) return; const i = actual(); ir(i + 1 >= lista.length ? 0 : i + 1); };
+    const reiniciar = () => { clearInterval(timerCar); if (lista.length > 1) timerCar = setInterval(avanzar, 5000); };
     car.addEventListener('touchstart', () => clearInterval(timerCar), { passive: true });
     car.addEventListener('touchend', reiniciar, { passive: true });
     reiniciar();
