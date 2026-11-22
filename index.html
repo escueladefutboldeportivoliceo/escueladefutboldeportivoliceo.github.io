@@ -447,6 +447,18 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 /* Títulos de botones: nunca cortar palabras */
 .botones-inicio b{hyphens:none!important;-webkit-hyphens:none!important;word-break:normal;overflow-wrap:normal;white-space:normal}
 
+/* Síguenos en Instagram */
+#igInicio{margin-top:34px}
+.ig-fila{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;margin:0 -16px;padding:2px 16px 10px;scroll-padding:0 16px}
+.ig-item{flex:0 0 330px;max-width:330px;scroll-snap-align:start}
+.ig-item .instagram-media,.ig-item iframe{margin:0!important;min-width:0!important;width:100%!important;border-radius:16px!important;box-shadow:0 8px 20px -12px rgba(0,0,0,.3)!important}
+.ig-item blockquote.instagram-media{background:#fff;border:1px solid #e3ebe5;padding:18px;min-height:160px;display:grid;place-items:center}
+.ig-item blockquote a{color:var(--verde);font-weight:800}
+@media (min-width:900px){.ig-fila{margin:0}}
+.det-ig{margin:16px 0 6px}
+.det-ig .instagram-media,.det-ig iframe{margin:0 auto!important;min-width:0!important;width:100%!important;max-width:540px!important;border-radius:16px!important}
+.det-ig blockquote.instagram-media{background:#fff;border:1px solid #e3ebe5;padding:18px;text-align:center}
+
 </style>
 </head>
 <body>
@@ -480,6 +492,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     <a href="#/documentos" data-boton="documentos" class="b t-claro" data-dyn="documentos" hidden><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 17h5"/></svg></span><b>Documentos</b><span class="bs">Reglamentos y más</span></a>
     <a href="#/contacto" data-boton="contacto" class="b t-wsp ancho"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13.5h5"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 13.5h5"/></svg></span><b>Contacto</b><span class="bs">WhatsApp, correo y redes sociales</span></a>
   </nav>
+  <section id="igInicio" hidden></section>
   <section id="auspInicio" hidden></section>
 </div>
 </div>
@@ -686,8 +699,10 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
       ${d.length ? `<div class="det-datos">${d.join('<br>')}</div>` : ''}
       ${p.texto ? `<div class="det-txt">${enlaces(p.texto)}</div>` : ''}
       ${p.lugar ? `<a class="btn li" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.lugar + ' Paillaco')}" target="_blank" rel="noopener">Ver lugar en el mapa</a>` : ''}
+      ${igUrl(p.link) ? `<div class="det-ig"><blockquote class="instagram-media" data-instgrm-permalink="${igUrl(p.link)}?utm_source=ig_embed" data-instgrm-version="14"><a href="${igUrl(p.link)}" target="_blank" rel="noopener">Ver esta publicación en Instagram</a></blockquote></div><a class="btn ig" href="${igUrl(p.link)}" target="_blank" rel="noopener">Ver en Instagram</a>` : ''}
       <button class="btn wa" type="button" data-compartir>Compartir</button>
       <a class="volver" href="#/${p.tipo === 'logro' ? 'logros' : 'novedades'}">Ver ${p.tipo === 'logro' ? 'todos los logros' : 'todas las novedades'}</a>`;
+    if (igUrl(p.link)) cargarIg();
     sec.querySelector('[data-compartir]').onclick = () => {
       const url = location.href.split('#')[0] + '#/novedad/' + p.id;
       if (navigator.share) navigator.share({ title: p.titulo, text: T[1] + ' ' + p.titulo, url }).catch(() => {});
@@ -804,6 +819,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   function pintarItems(items) {
     const de = s => items.filter(x => x.seccion === s);
     FOTOS_PANEL = {}; TEXTOS_PANEL = {}; de('boton').forEach(x => { if (x.imagen_url) FOTOS_PANEL[x.titulo] = x.imagen_url; TEXTOS_PANEL[x.titulo] = { t: (x.subtitulo || '').trim(), s: (x.texto || '').trim() }; }); fotosBotones(); textosBotones();
+    pintarInstagram(de('instagram'));
     const eq = de('equipo');
     if (eq.length) {
       const sec = document.getElementById('equipo');
@@ -872,6 +888,24 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     't-claro': 'linear-gradient(180deg,rgba(19,74,34,.25) 0%,rgba(19,74,34,.9) 80%)',
     't-wsp': 'linear-gradient(90deg,rgba(14,122,55,.95) 0%,rgba(22,163,74,.8) 55%,rgba(47,220,111,.4) 100%)'
   };
+  const igUrl = l => { const m = String(l || '').match(/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/([\w-]+)/i); return m ? 'https://www.instagram.com/' + m[1].toLowerCase() + '/' + m[2] + '/' : null; };
+  function cargarIg() {
+    if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
+    else if (!document.getElementById('igScript')) { const sc = document.createElement('script'); sc.id = 'igScript'; sc.async = true; sc.src = 'https://www.instagram.com/embed.js'; document.body.appendChild(sc); }
+  }
+  // Publicaciones de Instagram pegadas desde el panel
+  function pintarInstagram(lista) {
+    const el = document.getElementById('igInicio'); if (!el) return;
+    const urls = lista.slice().sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || ''))).map(x => {
+      const m = String(x.link || '').match(/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/([\w-]+)/i);
+      return m ? 'https://www.instagram.com/' + m[1].toLowerCase() + '/' + m[2] + '/' : null;
+    }).filter(Boolean).slice(0, 8);
+    if (!urls.length) { el.hidden = true; el.innerHTML = ''; return; }
+    el.innerHTML = `<div class="ausp-cab"><span>Síguenos en Instagram</span><a href="https://www.instagram.com/escueladefutboldeportivoliceo/" target="_blank" rel="noopener">Ver perfil ›</a></div>
+      <div class="ig-fila">${urls.map(u => `<div class="ig-item"><blockquote class="instagram-media" data-instgrm-permalink="${u}?utm_source=ig_embed" data-instgrm-version="14"><a href="${u}" target="_blank" rel="noopener">Ver esta publicación en Instagram</a></blockquote></div>`).join('')}</div>`;
+    el.hidden = false;
+    cargarIg();
+  }
   let FOTOS_PANEL = {}, TEXTOS_PANEL = {};
   // Textos de los botones editables desde el panel (vacío = texto original)
   function textosBotones() {
