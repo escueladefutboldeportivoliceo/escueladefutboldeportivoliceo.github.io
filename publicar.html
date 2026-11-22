@@ -435,6 +435,7 @@ function editor(p) {
         <button class="btn b-am" type="submit" id="bGuardar">Guardar</button>
       </div>
       ${nuevo ? '' : `<div class="botones"><button class="btn b-wsp" type="button" id="bCompartir">Compartir por WhatsApp</button>
+        <button class="btn" type="button" id="bHistoria" style="background:linear-gradient(45deg,#f09433,#dc2743 50%,#bc1888);color:#fff">📲 Historia para Instagram o Facebook</button>
         <button class="btn b-ro" type="button" id="bBorrar">Eliminar publicación</button></div>`}
     </form>`, hoja => {
     const f = hoja.querySelector('#fPub');
@@ -449,6 +450,7 @@ function editor(p) {
     };
     hoja.querySelector('#bQuitarFoto').onclick = () => { fotoNueva = null; quitarFoto = true; hoja.querySelector('#fotoPrev').innerHTML = ''; hoja.querySelector('#bQuitarFoto').hidden = true; };
     const bc = hoja.querySelector('#bCompartir'); if (bc) bc.onclick = () => compartir(p);
+    const bh = hoja.querySelector('#bHistoria'); if (bh) bh.onclick = () => historia(p);
     const bb = hoja.querySelector('#bBorrar'); if (bb) bb.onclick = async () => {
       if (!confirm('¿Eliminar "' + p.titulo + '"? Se borra de la página.')) return;
       const { error } = await sb.from('web_publicaciones').delete().eq('id', p.id);
@@ -662,6 +664,107 @@ function editorItem(x) {
         bt.disabled = false; bt.textContent = 'Guardar';
       }
     });
+  });
+}
+
+// ---------- Historia 9:16 con enlace a la noticia ----------
+function cargarImg(src) {
+  return new Promise(res => {
+    if (!src) return res(null);
+    const usar = u => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = u; };
+    if (/^data:/.test(src)) return usar(src);
+    fetch(src).then(r => r.ok ? r.blob() : null).then(b => b ? usar(URL.createObjectURL(b)) : res(null)).catch(() => res(null));
+  });
+}
+function lineas(ctx, texto, ancho, max) {
+  const pal = String(texto).split(/\s+/), out = []; let l = '';
+  for (const w of pal) { const t = l ? l + ' ' + w : w; if (ctx.measureText(t).width > ancho && l) { out.push(l); l = w; } else l = t; }
+  if (l) out.push(l);
+  if (out.length > max) { out.length = max; out[max - 1] = out[max - 1].replace(/\s*\S*$/, '') + '…'; }
+  return out;
+}
+async function dibujarHistoria(p) {
+  const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const c = cv.getContext('2d');
+  try { await document.fonts.ready; } catch (e) {}
+  const T = TIPOS[p.tipo] || TIPOS.noticia;
+  const foto = await cargarImg(p.imagen_url);
+  const escEl = document.querySelector('img[src^="data:image/png;base64"]');
+  const escudo = escEl ? await cargarImg(escEl.src) : null;
+  // fondo
+  const g = c.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#1f7a3a'); g.addColorStop(1, '#0b3318'); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  if (foto) {
+    const r = Math.max(W / foto.width, H / foto.height), fw = foto.width * r, fh = foto.height * r;
+    c.drawImage(foto, (W - fw) / 2, (H - fh) / 2, fw, fh);
+    const v = c.createLinearGradient(0, 0, 0, H);
+    v.addColorStop(0, 'rgba(0,0,0,.55)'); v.addColorStop(.25, 'rgba(0,0,0,.05)'); v.addColorStop(.5, 'rgba(0,0,0,.25)'); v.addColorStop(1, 'rgba(6,30,14,.95)');
+    c.fillStyle = v; c.fillRect(0, 0, W, H);
+  } else {
+    c.fillStyle = 'rgba(242,194,48,.9)'; c.save(); c.translate(W - 60, -40); c.rotate(.35); c.fillRect(0, 0, 120, 900); c.restore();
+  }
+  // encabezado: escudo + nombre
+  if (escudo) { c.save(); c.beginPath(); c.arc(150, 190, 82, 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill(); c.clip(); c.drawImage(escudo, 72, 112, 156, 156); c.restore(); }
+  c.fillStyle = '#fff'; c.textBaseline = 'middle';
+  c.font = '600 34px Poppins, Arial'; c.fillText('ESCUELA DE FÚTBOL', 262, 160);
+  c.font = '52px Anton, Impact, Arial'; c.fillText('DEPORTIVO LICEO', 262, 216);
+  // bloque inferior
+  c.font = '700 70px Poppins, Arial';
+  const tit = lineas(c, p.titulo, W - 160, 4);
+  const resumen = p.texto ? (c.font = '500 40px Poppins, Arial', lineas(c, p.texto, W - 160, 3)) : [];
+  const zy = H - 330;
+  const alto = 120 + tit.length * 84 + (p.fecha_evento ? 70 : 0) + (resumen.length ? 10 + resumen.length * 54 : 0);
+  let y = zy - 150 - alto + 37;
+  // pastilla de tipo
+  c.font = '700 36px Poppins, Arial'; const et = (T.e + '  ' + T.t).toUpperCase(); const ew = c.measureText(et).width + 64;
+  c.fillStyle = '#F2C230'; c.beginPath(); c.roundRect(80, y, ew, 74, 37); c.fill();
+  c.fillStyle = '#2a2100'; c.fillText(et, 112, y + 39); y += 120;
+  c.fillStyle = '#fff'; c.font = '700 70px Poppins, Arial'; c.shadowColor = 'rgba(0,0,0,.5)'; c.shadowBlur = 18;
+  tit.forEach(l => { c.fillText(l, 80, y); y += 84; });
+  c.shadowBlur = 0;
+  if (p.fecha_evento) { c.font = '600 42px Poppins, Arial'; c.fillStyle = '#F2C230'; c.fillText('🗓️ ' + fechaCL(p.fecha_evento) + (p.hora ? ' · ' + p.hora + ' h' : '') + (p.lugar ? ' · ' + p.lugar : ''), 80, y + 4); y += 70; }
+  if (resumen.length) { y += 10; c.font = '500 40px Poppins, Arial'; c.fillStyle = 'rgba(255,255,255,.92)'; resumen.forEach(l => { c.fillText(l, 80, y); y += 54; }); }
+  // zona para el sticker de enlace
+  c.setLineDash([18, 14]); c.lineWidth = 5; c.strokeStyle = 'rgba(255,255,255,.75)'; c.beginPath(); c.roundRect(170, zy, W - 340, 150, 40); c.stroke(); c.setLineDash([]);
+  c.fillStyle = '#fff'; c.font = '700 40px Poppins, Arial'; c.textAlign = 'center';
+  c.fillText('Toca el enlace para leer más 👇', W / 2, zy - 50);
+  c.font = '600 34px Poppins, Arial'; c.fillStyle = 'rgba(255,255,255,.8)'; c.fillText('(pon aquí el sticker de enlace)', W / 2, zy + 75);
+  c.textAlign = 'left';
+  return cv;
+}
+async function historia(p) {
+  const url = SITIO + '#/novedad/' + p.id;
+  abrirHoja(`<h2>Historia para Instagram o Facebook</h2>
+    <p class="sub">Imagen vertical lista para subir, con el enlace directo a esta noticia.</p>
+    <div id="hPrev" style="text-align:center;margin:8px 0 14px"><p class="muted">Preparando imagen…</p></div>
+    <ol style="margin:0 0 14px 20px;line-height:1.55;font-size:15px">
+      <li>Toca <b>Compartir imagen</b> y elige <b>Instagram</b> o <b>Facebook</b> → <b>Historia</b>. Si no aparece, toca <b>Guardar imagen</b> y súbela desde la galería.</li>
+      <li>Toca <b>Copiar enlace</b>.</li>
+      <li>En la historia, toca el ícono de stickers 🙂 → <b>Enlace</b>, pega y ubícalo en el recuadro punteado.</li>
+    </ol>
+    <div class="botones">
+      <button class="btn b-am" type="button" id="hCompartir" disabled>📤 Compartir imagen</button>
+      <button class="btn b-bo" type="button" id="hCopiar">🔗 Copiar enlace</button>
+      <a class="btn b-bo" id="hBajar" download="historia-deportivo-liceo.png" href="#" hidden>⬇️ Guardar imagen</a>
+      <button class="btn b-bo" type="button" data-cerrar>Cerrar</button>
+    </div>`, async hoja => {
+    hoja.querySelector('[data-cerrar]').onclick = cerrarHoja;
+    hoja.querySelector('#hCopiar').onclick = async () => {
+      try { await navigator.clipboard.writeText(url); toast('Enlace copiado'); }
+      catch (e) { prompt('Copia este enlace:', url); }
+    };
+    let cv;
+    try { cv = await dibujarHistoria(p); } catch (e) { hoja.querySelector('#hPrev').innerHTML = '<p class="muted">No se pudo crear la imagen.</p>'; return; }
+    const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+    const purl = URL.createObjectURL(blob);
+    hoja.querySelector('#hPrev').innerHTML = `<img src="${purl}" alt="Vista previa de la historia" style="width:62%;max-width:260px;border-radius:16px;box-shadow:0 10px 26px -12px rgba(0,0,0,.45)">`;
+    const bajar = hoja.querySelector('#hBajar'); bajar.href = purl; bajar.hidden = false;
+    const file = new File([blob], 'historia-deportivo-liceo.png', { type: 'image/png' });
+    const bc = hoja.querySelector('#hCompartir'); bc.disabled = false;
+    bc.onclick = async () => {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file] }); } catch (e) {}
+      } else { bajar.click(); toast('Imagen guardada. Súbela a tu historia desde la galería.', 4000); }
+    };
   });
 }
 

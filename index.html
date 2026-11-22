@@ -469,6 +469,14 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 .det-ig iframe.fb-post{display:block;width:100%;max-width:500px;height:600px;margin:0 auto;border:0;border-radius:16px;background:#fff}
 .ig-item blockquote.text-post-media,.det-ig blockquote.text-post-media{background:#fff;border:1px solid #e3ebe5;border-radius:16px;padding:18px;min-height:160px;display:grid;place-items:center;margin:0}
 
+/* Tarjetas de redes: todas del mismo tamaño */
+.ig-fila{align-items:stretch}
+.ig-item{height:640px;overflow:hidden;border-radius:16px;background:#fff;border:1px solid #e3ebe5;box-shadow:0 8px 20px -12px rgba(0,0,0,.3);position:relative}
+.ig-item .instagram-media,.ig-item iframe,.ig-item blockquote{border:0!important;box-shadow:none!important;border-radius:0!important;margin:0!important}
+.ig-item iframe.fb-post,.ig-item iframe.fb-vid{height:100%!important;box-shadow:none;border-radius:0}
+.ig-item blockquote.instagram-media,.ig-item blockquote.text-post-media{height:100%;border:0!important}
+.ig-item:after{content:"";position:absolute;left:0;right:0;bottom:0;height:28px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff);pointer-events:none}
+
 </style>
 </head>
 <body>
