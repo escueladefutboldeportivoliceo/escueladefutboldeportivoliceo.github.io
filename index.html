@@ -900,7 +900,13 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   };
   // Publicaciones de redes sociales (Instagram, Facebook, Threads) incrustadas
   const igUrl = l => { const m = String(l || '').match(/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/([\w-]+)/i); return m ? 'https://www.instagram.com/' + m[1].toLowerCase() + '/' + m[2] + '/' : null; };
-  const fbUrl = l => /^https?:\/\/([\w-]+\.)?(facebook\.com|fb\.watch)\//i.test(String(l || '').trim()) ? String(l).trim() : null;
+  const fbUrl = l => {
+    l = String(l || '').trim();
+    if (!/^https?:\/\/([\w-]+\.)?(facebook\.com|fb\.watch)\//i.test(l)) return null;
+    const st = l.match(/story_fbid=(\w+)/), id = l.match(/[?&]id=(\d+)/);
+    if (st && id) return 'https://www.facebook.com/' + id[1] + '/posts/' + st[1];
+    return l.split('?')[0].includes('permalink.php') ? l : l.replace(/[?&](mibextid|rdid|share_url|__cft__|__tn__)[^&]*/g, '');
+  };
   const thUrl = l => { const m = String(l || '').match(/threads\.(?:net|com)\/(@[\w.]+)\/post\/([\w-]+)/i); return m ? 'https://www.threads.net/' + m[1] + '/post/' + m[2] : null; };
   const redUrl = l => igUrl(l) || thUrl(l) || fbUrl(l);
   function redEmbed(l) {

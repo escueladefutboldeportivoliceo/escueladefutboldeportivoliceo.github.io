@@ -283,6 +283,9 @@ const TIPOS = {
   logro: { t: 'Logro', e: '🏆' }
 };
 
+// Facebook: los enlaces cortos "share" no se pueden mostrar en otra página
+const fbCorto = l => /facebook\.com\/share\//i.test(l || '');
+const MSG_FB = 'Ese enlace corto de Facebook no se puede mostrar. Pégalo en Safari, ábrelo y copia la dirección larga que aparece arriba (con story_fbid o /posts/).';
 const $ = id => document.getElementById(id);
 const h = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const hoyISO = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
@@ -458,6 +461,7 @@ function editor(p) {
       const titulo = f.titulo.value.trim();
       if (!titulo) { toast('Escribe un título.'); f.titulo.focus(); return; }
       const linkIg = f.link.value.trim();
+      if (fbCorto(linkIg)) { toast(MSG_FB, 7000); f.link.focus(); return; }
       if (linkIg && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+|facebook\.com\/|fb\.watch\/|threads\.(net|com)\/@[\w.]+\/post\//i.test(linkIg)) { toast('El enlace no es válido. En Instagram, Facebook o Threads toca Compartir → Copiar enlace.', 4500); f.link.focus(); return; }
       const bt = hoja.querySelector('#bGuardar'); bt.disabled = true; bt.textContent = 'Guardando…';
       try {
@@ -632,6 +636,7 @@ function editorItem(x) {
       if (seccion === 'faq' && !f.texto.value.trim()) { toast('Escribe la respuesta.'); return; }
       const link = f.link ? f.link.value.trim() : '';
       if (link && !/^https?:\/\//i.test(link)) { toast('El enlace debe empezar con https://'); return; }
+      if (fbCorto(link)) { toast(MSG_FB, 7000); return; }
       if (seccion === 'instagram' && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+|facebook\.com\/|fb\.watch\/|threads\.(net|com)\/@[\w.]+\/post\//i.test(link)) { toast('Pega el enlace de una publicación de Instagram, Facebook o Threads (Compartir → Copiar enlace).', 4500); return; }
       const bt = hoja.querySelector('#bGuardarItem'); bt.disabled = true; bt.textContent = 'Guardando…';
       try {
