@@ -444,10 +444,13 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   .cinta{margin:0}
 }
 
+/* Títulos de botones: nunca cortar palabras */
+.botones-inicio b{hyphens:none!important;-webkit-hyphens:none!important;word-break:normal;overflow-wrap:normal;white-space:normal}
+
 </style>
 </head>
 <body>
-<nav class="nav-top" id="navTop" aria-label="Menú principal"><div class="in"><a class="marca" href="#/"><img id="escudoTop" alt=""><span>Escuela de Fútbol<b>Deportivo Liceo</b></span></a><div class="links"><a href="#/" data-nav="">Inicio</a><a href="#/entrenamientos" data-nav="entrenamientos">Entrenamientos</a><a href="#/novedades" data-nav="novedades">Noticias</a><a href="#/matricula" data-nav="matricula">Matrícula</a><a href="#/galeria" data-nav="galeria">Galería</a><a href="#/contacto" data-nav="contacto">Contacto</a></div><a class="cta-top" href="#/matricula">Inscríbete</a></div></nav>
+<nav class="nav-top" id="navTop" aria-label="Menú principal"><div class="in"><a class="marca" href="#/"><img id="escudoTop" alt=""><span>Escuela de Fútbol<b>Deportivo Liceo</b></span></a><div class="links"><a href="#/" data-nav="">Inicio</a><a href="#/entrenamientos" data-nav="entrenamientos">Horarios</a><a href="#/novedades" data-nav="novedades">Noticias</a><a href="#/matricula" data-nav="matricula">Matrícula</a><a href="#/galeria" data-nav="galeria">Galería</a><a href="#/contacto" data-nav="contacto">Contacto</a></div><a class="cta-top" href="#/matricula">Inscríbete</a></div></nav>
 
 
 <div class="vista" data-ruta="" id="inicio">
@@ -466,7 +469,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   <div class="explora"><span>Explora la escuela</span></div>
   <nav class="botones-inicio" aria-label="Secciones">
     <a href="#/novedades" data-boton="novedades" class="b t-noche ancho" data-dyn="novedades" hidden><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg></span><span class="vivo"><i></i>Lo último</span><b>Novedades</b><span class="bs">Avisos, partidos y noticias</span></a>
-    <a href="#/entrenamientos" data-boton="entrenamientos" class="b t-verde alto"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3"/></svg></span><b>Entrena&shy;mientos</b><span class="bs">Días, horarios y lugar de cada categoría</span></a>
+    <a href="#/entrenamientos" data-boton="entrenamientos" class="b t-verde alto"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3"/></svg></span><b>Horarios</b><span class="bs">Días, horarios y lugar de cada categoría</span></a>
     <a href="#/matricula" data-boton="matricula" class="b t-amarillo"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><rect x="9" y="2.5" width="6" height="3.5" rx="1"/><path d="M9 13l2 2 4-4"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><rect x="9" y="2.5" width="6" height="3.5" rx="1"/><path d="M9 13l2 2 4-4"/></svg></span><b>Matrícula</b><span class="bs">Inscribe a tu hijo o hija</span></a>
     <a href="#/galeria" data-boton="galeria" class="b t-foto"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><b>Galería</b><span class="bs">Fotos de la escuela</span></a>
     <a href="#/logros" data-boton="logros" class="b t-oro ancho"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 21h6M10 17h4"/></svg></span><i class="fl" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></i><span class="marca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 21h6M10 17h4"/></svg></span><b>Logros</b><span class="bs">Campeonatos y premios de nuestros deportistas</span></a>
@@ -800,7 +803,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   }
   function pintarItems(items) {
     const de = s => items.filter(x => x.seccion === s);
-    FOTOS_PANEL = {}; de('boton').forEach(x => { if (x.imagen_url) FOTOS_PANEL[x.titulo] = x.imagen_url; }); fotosBotones();
+    FOTOS_PANEL = {}; TEXTOS_PANEL = {}; de('boton').forEach(x => { if (x.imagen_url) FOTOS_PANEL[x.titulo] = x.imagen_url; TEXTOS_PANEL[x.titulo] = { t: (x.subtitulo || '').trim(), s: (x.texto || '').trim() }; }); fotosBotones(); textosBotones();
     const eq = de('equipo');
     if (eq.length) {
       const sec = document.getElementById('equipo');
@@ -869,7 +872,34 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     't-claro': 'linear-gradient(180deg,rgba(19,74,34,.25) 0%,rgba(19,74,34,.9) 80%)',
     't-wsp': 'linear-gradient(90deg,rgba(14,122,55,.95) 0%,rgba(22,163,74,.8) 55%,rgba(47,220,111,.4) 100%)'
   };
-  let FOTOS_PANEL = {};
+  let FOTOS_PANEL = {}, TEXTOS_PANEL = {};
+  // Textos de los botones editables desde el panel (vacío = texto original)
+  function textosBotones() {
+    document.querySelectorAll('.botones-inicio [data-boton]').forEach(a => {
+      const b = a.querySelector('b'), bs = a.querySelector('.bs'), r = a.dataset.boton, p = TEXTOS_PANEL[r] || {};
+      if (b) { if (b.dataset.orig == null) b.dataset.orig = b.textContent; b.textContent = p.t || b.dataset.orig; }
+      if (bs) { if (bs.dataset.orig == null) bs.dataset.orig = bs.textContent; bs.textContent = p.s || bs.dataset.orig; }
+    });
+    ajustarTitulos();
+  }
+  // Achica la letra del título si una palabra no cabe completa en el botón
+  function ajustarTitulos() {
+    document.querySelectorAll('.botones-inicio [data-boton] b').forEach(b => {
+      b.style.fontSize = '';
+      if (!b.offsetWidth) return;
+      let fs = parseFloat(getComputedStyle(b).fontSize);
+      const palabras = b.textContent.split(/\s+/).filter(Boolean);
+      const medir = document.createElement('span');
+      medir.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font:inherit;letter-spacing:inherit';
+      b.appendChild(medir);
+      const ancho = () => Math.max(...palabras.map(w => { medir.textContent = w; return medir.offsetWidth; }));
+      while (fs > 12 && ancho() > b.clientWidth) { fs -= 1; b.style.fontSize = fs + 'px'; }
+      medir.remove();
+    });
+  }
+  window.addEventListener('resize', () => { clearTimeout(window.__tAj); window.__tAj = setTimeout(ajustarTitulos, 150); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustarTitulos);
+  window.addEventListener('hashchange', () => setTimeout(ajustarTitulos, 50));
   function fotosBotones() {
     const fijas = [...document.querySelectorAll('#galeria-fotos img[data-fija]')];
     document.querySelectorAll('.botones-inicio [data-boton]').forEach(a => {
@@ -946,6 +976,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   ponerVolver();
 
   pintarCarrusel([]);
+  setTimeout(textosBotones, 0);
   { const et = document.getElementById('escudoTop'), lg = document.querySelector('.portada .logo'); if (et && lg) et.src = lg.src; }
   // Movimiento al desplazar: parallax de la portada y aparición de bloques
   (function () {

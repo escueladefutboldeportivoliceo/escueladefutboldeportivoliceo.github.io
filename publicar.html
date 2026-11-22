@@ -298,11 +298,11 @@ const SECCIONES = {
   equipo: { t: 'Cuerpo técnico', uno: 'persona', titulo: 'Nombre *', sub: 'Cargo', subPh: 'Ej.: Profesor categoría 2016-2017', texto: 'Descripción breve', img: 'Foto', vacio: 'Agrega a los profesores y encargados. Aparecerán en la página con su foto y cargo.' },
   faq: { t: 'Preguntas', uno: 'pregunta', titulo: 'Pregunta *', texto: 'Respuesta *', vacio: 'Mientras no agregues preguntas, la página muestra 5 preguntas sugeridas. Puedes cargarlas aquí para editarlas.' },
   auspiciador: { t: 'Auspiciadores', uno: 'auspiciador', titulo: 'Nombre *', img: 'Logo', link: 'Sitio web o Instagram', vacio: 'Agrega a las empresas o personas que apoyan a la escuela.' },
-  boton: { t: 'Fotos de botones' },
+  boton: { t: 'Botones del inicio' },
   documento: { t: 'Documentos', uno: 'documento', titulo: 'Nombre del documento *', texto: 'Descripción', archivo: 'Archivo (PDF o imagen)', link: 'O pega un enlace (Google Drive, etc.)', vacio: 'Sube reglamentos, calendarios u otros documentos para los apoderados.' }
 };
 const BOTONES = [
-  ['novedades', 'Novedades'], ['entrenamientos', 'Entrenamientos'], ['matricula', 'Matrícula'], ['galeria', 'Galería'],
+  ['novedades', 'Novedades'], ['entrenamientos', 'Horarios'], ['matricula', 'Matrícula'], ['galeria', 'Galería'],
   ['logros', 'Logros'], ['equipo', 'Cuerpo técnico'], ['preguntas', 'Preguntas'], ['lugares', 'Recintos'],
   ['auspiciadores', 'Nos apoyan'], ['documentos', 'Documentos'], ['contacto', 'Contacto']
 ];
@@ -513,53 +513,59 @@ function pintarItems() {
 
 function pintarBotones() {
   const fotos = {}; ITEMS.filter(x => x.seccion === 'boton').forEach(x => { fotos[x.titulo] = x; });
-  $('lista').innerHTML = `<p class="muted" style="margin:0 0 4px">Elige la foto de fondo de cada botón del inicio. Si no eliges una, se usa una foto de la galería.</p>` + BOTONES.map(([k, n]) => {
+  $('lista').innerHTML = `<p class="muted" style="margin:0 0 4px">Cambia la foto, el título o el texto de cada botón del inicio. Lo que dejes vacío usa lo original.</p>` + BOTONES.map(([k, n]) => {
     const f = fotos[k];
     return `<div class="item" data-b="${k}" style="cursor:pointer">${f && f.imagen_url ? `<img src="${h(f.imagen_url)}" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none">` : '<div class="av" style="width:56px;height:56px;border-radius:12px;font-size:22px">🖼️</div>'}
-      <div class="datos"><b>${n}</b><span>${f && f.imagen_url ? 'Foto elegida por ti' : 'Foto automática'}</span></div></div>`;
+      <div class="datos"><b>${f && f.subtitulo ? h(f.subtitulo) : n}</b><span>${f && f.imagen_url ? 'Foto elegida por ti' : 'Foto automática'}${f && (f.subtitulo || f.texto) ? ' · texto cambiado' : ''}</span></div></div>`;
   }).join('');
   $('lista').querySelectorAll('[data-b]').forEach(el => el.onclick = () => editorBoton(el.dataset.b, fotos[el.dataset.b]));
 }
 
 function editorBoton(k, x) {
   const nombre = (BOTONES.find(b => b[0] === k) || [k, k])[1];
-  let archivo = null;
+  let archivo = null, quitarFoto = false;
   abrirHoja(`
-    <h2>Foto del botón ${h(nombre)}</h2>
-    <p class="sub">Se recomienda una foto horizontal y con buena luz.</p>
-    <div id="prevB">${x && x.imagen_url ? `<img src="${h(x.imagen_url)}" alt="" style="width:100%;border-radius:14px;max-height:240px;object-fit:cover">` : '<p class="muted">Ahora usa una foto automática de la galería.</p>'}</div>
+    <h2>Botón ${h(nombre)}</h2>
+    <p class="sub">Deja un campo vacío para usar el texto original.</p>
+    <label class="campo"><span>Título del botón</span><input class="inp" id="tB" maxlength="40" placeholder="${h(nombre)}" value="${h(x && x.subtitulo || '')}"></label>
+    <label class="campo"><span>Texto pequeño</span><input class="inp" id="sB" maxlength="80" placeholder="Texto original de la página" value="${h(x && x.texto || '')}"></label>
+    <p class="muted" style="margin:6px 0 10px">Si una palabra es muy larga, la página achica la letra sola para que se vea completa.</p>
+    <div id="prevB">${x && x.imagen_url ? `<img src="${h(x.imagen_url)}" alt="" style="width:100%;border-radius:14px;max-height:240px;object-fit:cover">` : '<p class="muted">Foto: usa una automática de la galería.</p>'}</div>
     <div class="botones">
       <label class="btn b-bo" style="position:relative">📷 Elegir foto<input type="file" accept="image/*" id="inB" style="position:absolute;inset:0;opacity:0"></label>
-      <button class="btn b-am" type="button" id="bGuardarB" disabled>Guardar foto</button>
-      ${x && x.imagen_url ? '<button class="btn b-ro" type="button" id="bQuitarB">Volver a la foto automática</button>' : ''}
+      ${x && x.imagen_url ? '<button class="btn b-bo" type="button" id="bQuitarB">Volver a la foto automática</button>' : ''}
+      <button class="btn b-am" type="button" id="bGuardarB">Guardar</button>
       <button class="btn b-bo" type="button" data-cerrar>Cancelar</button>
     </div>`, hoja => {
     hoja.querySelector('[data-cerrar]').onclick = cerrarHoja;
     hoja.querySelector('#inB').onchange = e => {
       const file = e.target.files[0]; if (!file) return;
-      archivo = file; hoja.querySelector('#prevB').innerHTML = `<img src="${URL.createObjectURL(file)}" alt="" style="width:100%;border-radius:14px;max-height:240px;object-fit:cover">`;
-      hoja.querySelector('#bGuardarB').disabled = false;
-    };
-    hoja.querySelector('#bGuardarB').onclick = async () => {
-      const bt = hoja.querySelector('#bGuardarB'); bt.disabled = true; bt.textContent = 'Subiendo…';
-      try {
-        const blob = await achicar(archivo, 1000);
-        const ruta = 'botones/' + k + '-' + Date.now() + '.jpg';
-        const { error: eu } = await sb.storage.from('web').upload(ruta, blob, { contentType: 'image/jpeg', cacheControl: '31536000' });
-        if (eu) throw eu;
-        const fila = { seccion: 'boton', titulo: k, imagen_path: ruta, imagen_url: sb.storage.from('web').getPublicUrl(ruta).data.publicUrl, visible: true, orden: 0, updated_at: new Date().toISOString() };
-        const res = x ? await sb.from('web_items').update(fila).eq('id', x.id) : await sb.from('web_items').insert(fila);
-        if (res.error) throw res.error;
-        if (x && x.imagen_path) sb.storage.from('web').remove([x.imagen_path]);
-        cerrarHoja(); toast('Foto guardada'); cargar();
-      } catch (err) { toast(esRed(err) ? 'Sin conexión.' : 'No se pudo guardar: ' + (err.message || err), 4500); bt.disabled = false; bt.textContent = 'Guardar foto'; }
+      archivo = file; quitarFoto = false; hoja.querySelector('#prevB').innerHTML = `<img src="${URL.createObjectURL(file)}" alt="" style="width:100%;border-radius:14px;max-height:240px;object-fit:cover">`;
     };
     const bq = hoja.querySelector('#bQuitarB');
-    if (bq) bq.onclick = async () => {
-      const { error } = await sb.from('web_items').delete().eq('id', x.id);
-      if (error) { toast('No se pudo: ' + error.message, 4000); return; }
-      if (x.imagen_path) sb.storage.from('web').remove([x.imagen_path]);
-      cerrarHoja(); toast('Vuelve a usar la foto automática'); cargar();
+    if (bq) bq.onclick = () => { archivo = null; quitarFoto = true; hoja.querySelector('#prevB').innerHTML = '<p class="muted">Foto: volverá a la automática al guardar.</p>'; };
+    hoja.querySelector('#bGuardarB').onclick = async () => {
+      const bt = hoja.querySelector('#bGuardarB'); bt.disabled = true; bt.textContent = 'Guardando…';
+      try {
+        const fila = { seccion: 'boton', titulo: k, subtitulo: hoja.querySelector('#tB').value.trim() || null, texto: hoja.querySelector('#sB').value.trim() || null, visible: true, orden: 0, updated_at: new Date().toISOString() };
+        let viejaRuta = null;
+        if (archivo) {
+          const blob = await achicar(archivo, 1000);
+          const ruta = 'botones/' + k + '-' + Date.now() + '.jpg';
+          const { error: eu } = await sb.storage.from('web').upload(ruta, blob, { contentType: 'image/jpeg', cacheControl: '31536000' });
+          if (eu) throw eu;
+          fila.imagen_path = ruta; fila.imagen_url = sb.storage.from('web').getPublicUrl(ruta).data.publicUrl;
+          viejaRuta = x && x.imagen_path;
+        } else if (quitarFoto) { fila.imagen_path = null; fila.imagen_url = null; viejaRuta = x && x.imagen_path; }
+        const vacio = !fila.subtitulo && !fila.texto && !(fila.imagen_url || (!quitarFoto && !archivo && x && x.imagen_url));
+        let res;
+        if (x && vacio) res = await sb.from('web_items').delete().eq('id', x.id);
+        else if (x) res = await sb.from('web_items').update(fila).eq('id', x.id);
+        else if (!vacio) res = await sb.from('web_items').insert(fila);
+        if (res && res.error) throw res.error;
+        if (viejaRuta) sb.storage.from('web').remove([viejaRuta]);
+        cerrarHoja(); toast('Botón guardado'); cargar();
+      } catch (err) { toast(esRed(err) ? 'Sin conexión.' : 'No se pudo guardar: ' + (err.message || err), 4500); bt.disabled = false; bt.textContent = 'Guardar'; }
     };
   });
 }
