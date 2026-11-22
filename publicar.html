@@ -298,7 +298,7 @@ const SECCIONES = {
   equipo: { t: 'Cuerpo técnico', uno: 'persona', titulo: 'Nombre *', sub: 'Cargo', subPh: 'Ej.: Profesor categoría 2016-2017', texto: 'Descripción breve', img: 'Foto', vacio: 'Agrega a los profesores y encargados. Aparecerán en la página con su foto y cargo.' },
   faq: { t: 'Preguntas', uno: 'pregunta', titulo: 'Pregunta *', texto: 'Respuesta *', vacio: 'Mientras no agregues preguntas, la página muestra 5 preguntas sugeridas. Puedes cargarlas aquí para editarlas.' },
   auspiciador: { t: 'Auspiciadores', uno: 'auspiciador', titulo: 'Nombre *', img: 'Logo', link: 'Sitio web o Instagram', vacio: 'Agrega a las empresas o personas que apoyan a la escuela.' },
-  instagram: { t: 'Instagram', vacioT: 'publicaciones de Instagram', uno: 'publicación de Instagram', titulo: 'Nombre para reconocerla', link: 'Enlace de la publicación *', linkReq: true, vacio: 'En Instagram, abre la publicación, toca ⋯ → Copiar enlace y pégalo aquí. Se verá en la página, en la sección "Síguenos en Instagram" (las más nuevas primero).' },
+  instagram: { t: 'Redes sociales', vacioT: 'publicaciones de redes sociales', uno: 'publicación', titulo: 'Nombre para reconocerla', link: 'Enlace de Instagram, Facebook o Threads *', linkReq: true, vacio: 'Abre la publicación en Instagram, Facebook o Threads, toca Compartir → Copiar enlace y pégalo aquí. Se verá en la página, en la sección "Síguenos en redes" (las más nuevas primero).' },
   boton: { t: 'Botones del inicio' },
   documento: { t: 'Documentos', uno: 'documento', titulo: 'Nombre del documento *', texto: 'Descripción', archivo: 'Archivo (PDF o imagen)', link: 'O pega un enlace (Google Drive, etc.)', vacio: 'Sube reglamentos, calendarios u otros documentos para los apoderados.' }
 };
@@ -419,7 +419,7 @@ function editor(p) {
       <label class="campo"><span>Categoría <small>(opcional)</small></span>
         <select class="inp" name="categoria"><option value="">Todas las categorías</option>${CATEGORIAS.map(c => `<option ${c === p.categoria ? 'selected' : ''}>${c}</option>`).join('')}</select></label>
       <label class="fila" style="margin:4px 0 12px;font-size:15px"><input type="checkbox" name="destacado" ${p.destacado ? 'checked' : ''} style="width:22px;height:22px;accent-color:#28B955"><span><b>Destacar</b> · aparece arriba de todo, en amarillo</span></label>
-      <label class="campo"><span>Enlace de Instagram <small>(opcional)</small></span><input class="inp" name="link" type="url" value="${h(p.link || '')}" placeholder="https://www.instagram.com/p/…" autocapitalize="off"><small>Si esta noticia también está en Instagram, pega aquí su enlace (⋯ → Copiar enlace). Se verá dentro de la noticia.</small></label>
+      <label class="campo"><span>Enlace de Instagram, Facebook o Threads <small>(opcional)</small></span><input class="inp" name="link" type="url" value="${h(p.link || '')}" placeholder="https://www.instagram.com/p/…" autocapitalize="off"><small>Si esta noticia también está publicada en tus redes, pega aquí su enlace (Compartir → Copiar enlace). Se verá dentro de la noticia.</small></label>
       <label class="campo"><span>Mostrar hasta <small>(opcional)</small></span><input class="inp" name="hasta" type="date" value="${h(p.hasta || '')}"><small>Después de esa fecha deja de verse en la página. Útil para avisos.</small></label>
       <div class="campo"><span>Estado</span>
         <div class="seg">
@@ -458,7 +458,7 @@ function editor(p) {
       const titulo = f.titulo.value.trim();
       if (!titulo) { toast('Escribe un título.'); f.titulo.focus(); return; }
       const linkIg = f.link.value.trim();
-      if (linkIg && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+/i.test(linkIg)) { toast('El enlace de Instagram no es válido. En Instagram toca ⋯ → Copiar enlace.', 4500); f.link.focus(); return; }
+      if (linkIg && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+|facebook\.com\/|fb\.watch\/|threads\.(net|com)\/@[\w.]+\/post\//i.test(linkIg)) { toast('El enlace no es válido. En Instagram, Facebook o Threads toca Compartir → Copiar enlace.', 4500); f.link.focus(); return; }
       const bt = hoja.querySelector('#bGuardar'); bt.disabled = true; bt.textContent = 'Guardando…';
       try {
         const esEv = ['evento', 'partido', 'logro'].includes(f.tipo.value);
@@ -632,7 +632,7 @@ function editorItem(x) {
       if (seccion === 'faq' && !f.texto.value.trim()) { toast('Escribe la respuesta.'); return; }
       const link = f.link ? f.link.value.trim() : '';
       if (link && !/^https?:\/\//i.test(link)) { toast('El enlace debe empezar con https://'); return; }
-      if (seccion === 'instagram' && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+/i.test(link)) { toast('Pega el enlace de una publicación de Instagram (⋯ → Copiar enlace).', 4500); return; }
+      if (seccion === 'instagram' && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+|facebook\.com\/|fb\.watch\/|threads\.(net|com)\/@[\w.]+\/post\//i.test(link)) { toast('Pega el enlace de una publicación de Instagram, Facebook o Threads (Compartir → Copiar enlace).', 4500); return; }
       const bt = hoja.querySelector('#bGuardarItem'); bt.disabled = true; bt.textContent = 'Guardando…';
       try {
         const fila = { seccion, titulo, subtitulo: f.subtitulo ? f.subtitulo.value.trim() || null : null, texto: f.texto ? f.texto.value.trim() || null : null,

@@ -459,6 +459,16 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 .det-ig .instagram-media,.det-ig iframe{margin:0 auto!important;min-width:0!important;width:100%!important;max-width:540px!important;border-radius:16px!important}
 .det-ig blockquote.instagram-media{background:#fff;border:1px solid #e3ebe5;padding:18px;text-align:center}
 
+.redes-btns{display:flex;gap:8px;margin:-2px 0 12px}
+.rb{flex:1;text-align:center;text-decoration:none;font-weight:900;font-size:14px;color:#fff;padding:11px 10px;border-radius:999px}
+.rb.ig{background:linear-gradient(45deg,#f09433,#dc2743 50%,#bc1888)}
+.rb.fb{background:#1877f2}
+.btn.fbk{background:#1877f2;color:#fff}
+.ig-item iframe.fb-post{display:block;width:100%!important;height:560px;border:0;background:#fff;border-radius:16px;box-shadow:0 8px 20px -12px rgba(0,0,0,.3)}
+.ig-item iframe.fb-vid{height:600px}
+.det-ig iframe.fb-post{display:block;width:100%;max-width:500px;height:600px;margin:0 auto;border:0;border-radius:16px;background:#fff}
+.ig-item blockquote.text-post-media,.det-ig blockquote.text-post-media{background:#fff;border:1px solid #e3ebe5;border-radius:16px;padding:18px;min-height:160px;display:grid;place-items:center;margin:0}
+
 </style>
 </head>
 <body>
@@ -699,10 +709,10 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
       ${d.length ? `<div class="det-datos">${d.join('<br>')}</div>` : ''}
       ${p.texto ? `<div class="det-txt">${enlaces(p.texto)}</div>` : ''}
       ${p.lugar ? `<a class="btn li" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.lugar + ' Paillaco')}" target="_blank" rel="noopener">Ver lugar en el mapa</a>` : ''}
-      ${igUrl(p.link) ? `<div class="det-ig"><blockquote class="instagram-media" data-instgrm-permalink="${igUrl(p.link)}?utm_source=ig_embed" data-instgrm-version="14"><a href="${igUrl(p.link)}" target="_blank" rel="noopener">Ver esta publicación en Instagram</a></blockquote></div><a class="btn ig" href="${igUrl(p.link)}" target="_blank" rel="noopener">Ver en Instagram</a>` : ''}
+      ${redEmbed(p.link) ? `<div class="det-ig">${redEmbed(p.link).html}</div><a class="btn ${redEmbed(p.link).red === 'Facebook' ? 'fbk' : 'ig'}" href="${redEmbed(p.link).url}" target="_blank" rel="noopener">Ver en ${redEmbed(p.link).red}</a>` : ''}
       <button class="btn wa" type="button" data-compartir>Compartir</button>
       <a class="volver" href="#/${p.tipo === 'logro' ? 'logros' : 'novedades'}">Ver ${p.tipo === 'logro' ? 'todos los logros' : 'todas las novedades'}</a>`;
-    if (igUrl(p.link)) cargarIg();
+    if (redEmbed(p.link)) cargarIg();
     sec.querySelector('[data-compartir]').onclick = () => {
       const url = location.href.split('#')[0] + '#/novedad/' + p.id;
       if (navigator.share) navigator.share({ title: p.titulo, text: T[1] + ' ' + p.titulo, url }).catch(() => {});
@@ -888,21 +898,35 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     't-claro': 'linear-gradient(180deg,rgba(19,74,34,.25) 0%,rgba(19,74,34,.9) 80%)',
     't-wsp': 'linear-gradient(90deg,rgba(14,122,55,.95) 0%,rgba(22,163,74,.8) 55%,rgba(47,220,111,.4) 100%)'
   };
+  // Publicaciones de redes sociales (Instagram, Facebook, Threads) incrustadas
   const igUrl = l => { const m = String(l || '').match(/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/([\w-]+)/i); return m ? 'https://www.instagram.com/' + m[1].toLowerCase() + '/' + m[2] + '/' : null; };
-  function cargarIg() {
-    if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
-    else if (!document.getElementById('igScript')) { const sc = document.createElement('script'); sc.id = 'igScript'; sc.async = true; sc.src = 'https://www.instagram.com/embed.js'; document.body.appendChild(sc); }
+  const fbUrl = l => /^https?:\/\/([\w-]+\.)?(facebook\.com|fb\.watch)\//i.test(String(l || '').trim()) ? String(l).trim() : null;
+  const thUrl = l => { const m = String(l || '').match(/threads\.(?:net|com)\/(@[\w.]+)\/post\/([\w-]+)/i); return m ? 'https://www.threads.net/' + m[1] + '/post/' + m[2] : null; };
+  const redUrl = l => igUrl(l) || thUrl(l) || fbUrl(l);
+  function redEmbed(l) {
+    const ig = igUrl(l), th = thUrl(l), fb = fbUrl(l);
+    if (ig) return { red: 'Instagram', url: ig, html: `<blockquote class="instagram-media" data-instgrm-permalink="${ig}?utm_source=ig_embed" data-instgrm-version="14"><a href="${ig}" target="_blank" rel="noopener">Ver esta publicación en Instagram</a></blockquote>` };
+    if (th) return { red: 'Threads', url: th, html: `<blockquote class="text-post-media" data-text-post-permalink="${th}" data-text-post-version="0"><a href="${th}" target="_blank" rel="noopener">Ver esta publicación en Threads</a></blockquote>` };
+    if (fb) { const vid = /\/(videos?|reel|watch)\b|fb\.watch|\/share\/[rv]\//i.test(fb); return { red: 'Facebook', url: fb, html: `<iframe class="fb-post${vid ? ' fb-vid' : ''}" src="https://www.facebook.com/plugins/${vid ? 'video' : 'post'}.php?href=${encodeURIComponent(fb)}&show_text=true&width=330" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" loading="lazy" title="Publicación de Facebook"></iframe>` }; }
+    return null;
   }
-  // Publicaciones de Instagram pegadas desde el panel
+  function cargarIg() {
+    if (document.querySelector('blockquote.instagram-media')) {
+      if (window.instgrm && window.instgrm.Embeds) window.instgrm.Embeds.process();
+      else if (!document.getElementById('igScript')) { const sc = document.createElement('script'); sc.id = 'igScript'; sc.async = true; sc.src = 'https://www.instagram.com/embed.js'; document.body.appendChild(sc); }
+    }
+    if (document.querySelector('blockquote.text-post-media')) {
+      const viejo = document.getElementById('thScript'); if (viejo) viejo.remove();
+      const sc = document.createElement('script'); sc.id = 'thScript'; sc.async = true; sc.src = 'https://www.threads.net/embed.js'; document.body.appendChild(sc);
+    }
+  }
   function pintarInstagram(lista) {
     const el = document.getElementById('igInicio'); if (!el) return;
-    const urls = lista.slice().sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || ''))).map(x => {
-      const m = String(x.link || '').match(/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/([\w-]+)/i);
-      return m ? 'https://www.instagram.com/' + m[1].toLowerCase() + '/' + m[2] + '/' : null;
-    }).filter(Boolean).slice(0, 8);
-    if (!urls.length) { el.hidden = true; el.innerHTML = ''; return; }
-    el.innerHTML = `<div class="ausp-cab"><span>Síguenos en Instagram</span><a href="https://www.instagram.com/escueladefutboldeportivoliceo/" target="_blank" rel="noopener">Ver perfil ›</a></div>
-      <div class="ig-fila">${urls.map(u => `<div class="ig-item"><blockquote class="instagram-media" data-instgrm-permalink="${u}?utm_source=ig_embed" data-instgrm-version="14"><a href="${u}" target="_blank" rel="noopener">Ver esta publicación en Instagram</a></blockquote></div>`).join('')}</div>`;
+    const posts = lista.slice().sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || ''))).map(x => redEmbed(x.link)).filter(Boolean).slice(0, 8);
+    if (!posts.length) { el.hidden = true; el.innerHTML = ''; return; }
+    el.innerHTML = `<div class="ausp-cab"><span>Síguenos en redes</span></div>
+      <div class="redes-btns"><a class="rb ig" href="https://www.instagram.com/escueladefutboldeportivoliceo/" target="_blank" rel="noopener">Instagram</a><a class="rb fb" href="https://www.facebook.com/share/1ARkdKaswE/" target="_blank" rel="noopener">Facebook</a></div>
+      <div class="ig-fila">${posts.map(x => `<div class="ig-item">${x.html}</div>`).join('')}</div>`;
     el.hidden = false;
     cargarIg();
   }
