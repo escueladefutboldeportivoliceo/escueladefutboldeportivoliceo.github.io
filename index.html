@@ -486,6 +486,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 .cta-pc{display:none}
 .ig-col{display:contents}
 .ig-perfil{display:none}
+.pie-pc{display:none}
 @media (min-width:1000px){
   header.portada{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:64px;align-items:center;text-align:left;
     padding:120px max(40px,calc((100vw - 1180px)/2)) 110px;min-height:min(100vh,820px)}
@@ -552,6 +553,44 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   .ig-perfil.red-instagram{background:linear-gradient(45deg,#f09433,#dc2743 50%,#bc1888)}
   .ig-perfil.red-facebook{background:#1877f2}
   .ig-perfil.red-threads{background:#111}
+  /* portada: logo centrado sobre el texto */
+  .p-izq{text-align:center;display:flex;flex-direction:column;align-items:center}
+  .p-izq .lema{text-align:center;margin-left:auto;margin-right:auto}
+  .cta-pc{justify-content:center}
+  /* botones de explorar: se destacan al pasar el mouse */
+  .botones-inicio>.b.rv,.botones-inicio>.b{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,filter .25s,opacity .7s ease,translate .8s cubic-bezier(.2,.8,.2,1),scale .8s cubic-bezier(.2,.8,.2,1)}
+  .botones-inicio>.b{animation:none}
+  .botones-inicio>.b:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 0 0 3px var(--amarillo),0 24px 40px -18px rgba(0,0,0,.5);filter:saturate(1.15) brightness(1.04);z-index:2}
+  .botones-inicio>.b.t-amarillo:hover{box-shadow:0 0 0 3px var(--verde),0 24px 40px -18px rgba(0,0,0,.5)}
+  .botones-inicio>.b:hover .fl{background:var(--amarillo);color:#2a2100;transform:scale(1.12)}
+  .botones-inicio>.b .fl{transition:transform .25s,background .25s}
+  /* pie de página a columnas con íconos */
+  footer{padding:0;text-align:left;font-size:0;margin-top:60px;border-top:1px solid #e3ebe5}
+  .pie-pc{font-size:16px}
+  footer>*:not(.pie-pc){display:none!important}
+  .pie-pc{display:block}
+  .pie-cols{max-width:1180px;margin:0 auto;padding:54px 40px 40px;display:grid;grid-template-columns:1fr .8fr 1.55fr 1.5fr;gap:32px}
+  .pie-marca img{width:96px;height:96px;border-radius:50%;margin-bottom:12px}
+  .pie-marca b{display:block;color:var(--verde);font-size:20px;font-weight:900;text-transform:uppercase;letter-spacing:1px}
+  .pie-nombre{display:block;color:var(--verde-osc);font-weight:800;font-size:16px;margin-top:4px}
+  .pie-marca p{margin-top:10px;color:var(--gris);font-size:15px;line-height:1.5;font-weight:500;max-width:300px}
+  .pie-col h4{font-size:14px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--verde);margin:6px 0 16px}
+  .pie-links,.pie-datos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  .pie-links a{display:inline-flex;align-items:center;gap:6px;color:var(--verde-osc);text-decoration:none;font-weight:700;font-size:16px;transition:color .2s,transform .2s}
+  .pie-links a svg{width:16px;height:16px;color:var(--amarillo)}
+  .pie-links a:hover{color:var(--verde);transform:translateX(3px)}
+  .pie-datos a{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--verde-osc);font-weight:800;font-size:16px}
+  .pie-datos small{display:block;font-weight:600;font-size:13px;color:var(--gris);white-space:nowrap}
+  .pie-links a{white-space:nowrap}
+  .pie-datos a:hover small{color:var(--verde)}
+  .pi{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--verde-claro);color:var(--verde);transition:transform .2s}
+  .pi svg{width:22px;height:22px}
+  .pi.wsp{background:#25D366;color:#fff}
+  .pi.ig{background:linear-gradient(45deg,#f09433,#dc2743 50%,#bc1888);color:#fff}
+  .pi.fb{background:#1877f2;color:#fff}
+  .pie-datos a:hover .pi{transform:scale(1.08)}
+  .pie-base{border-top:1px solid #e3ebe5;max-width:1180px;margin:0 auto;padding:18px 40px 26px;display:flex;justify-content:space-between;gap:20px;font-size:14px;color:var(--gris);font-weight:600}
+  .pie-base a{color:var(--gris)}
   /* páginas internas más anchas y galería en cuadrícula */
   body:not(.en-inicio) main.wrap{max-width:1000px}
   .galeria{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;overflow:visible;margin:0;padding:0}
@@ -559,8 +598,6 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   .galeria button:hover{transform:translateY(-3px);box-shadow:0 14px 28px -14px rgba(20,60,30,.45)}
   .galeria img{aspect-ratio:4/3}
   #galeria .desliza{display:none}
-  .botones-inicio>.b{transition:transform .2s,box-shadow .2s}
-  .botones-inicio>.b:hover{transform:translateY(-4px);box-shadow:0 18px 34px -18px rgba(0,0,0,.45)}
 }
 
 </style>
@@ -765,6 +802,39 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   <span class="correo-pie">escueladefutboldeportivoliceo@gmail.com</span><br>WhatsApp +56 9 5970 2063
   <p class="legal">Las fotos de deportistas se publican con autorización de sus apoderados.<br>© <span id="anio">2026</span> Escuela de Fútbol Deportivo Liceo</p>
   <a class="adm" href="publicar.html" rel="nofollow">Administración</a>
+  <div class="pie-pc">
+    <div class="pie-cols">
+      <div class="pie-marca">
+        <img id="logoPie2" alt="Escudo Escuela de Fútbol Deportivo Liceo">
+        <b>¡Vamos Liceo!</b>
+        <span class="pie-nombre">Escuela de Fútbol Deportivo Liceo</span>
+        <p>Formamos deportistas con proyección de habilidades para el fútbol y la vida.</p>
+      </div>
+      <div class="pie-col">
+        <h4>Secciones</h4>
+        <ul class="pie-links"><li><a href="#/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Inicio</a></li><li><a href="#/entrenamientos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Horarios</a></li><li><a href="#/matricula"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Matrícula</a></li><li><a href="#/novedades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Noticias</a></li><li><a href="#/galeria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Galería</a></li><li><a href="#/preguntas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Preguntas frecuentes</a></li><li><a href="#/contacto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Contacto</a></li></ul>
+      </div>
+      <div class="pie-col">
+        <h4>Contacto</h4>
+        <ul class="pie-datos">
+          <li><a href="https://wa.me/56959702063" target="_blank" rel="noopener"><span class="pi wsp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 11.6a8.4 8.4 0 0 1-12.4 7.4L3.5 20.5l1.5-4.5A8.4 8.4 0 1 1 20.5 11.6z"/><path d="M9 8.5c.3 2.6 2.4 5 5.5 6l1.2-1.3-1.8-1-1 .8c-1-.4-2-1.4-2.4-2.4l.8-1-1-1.8z"/></svg></span><span>WhatsApp<small>+56 9 5970 2063</small></span></a></li>
+          <li><a href="mailto:escueladefutboldeportivoliceo@gmail.com"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span>Correo<small>escueladefutboldeportivoliceo@gmail.com</small></span></a></li>
+          <li><a href="#/lugares"><span class="pi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><span>Ubicación<small>Paillaco, Región de Los Ríos</small></span></a></li>
+        </ul>
+      </div>
+      <div class="pie-col">
+        <h4>Síguenos</h4>
+        <ul class="pie-datos">
+          <li><a href="https://www.instagram.com/escueladefutboldeportivoliceo/" target="_blank" rel="noopener"><span class="pi ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span><span>Instagram<small>@escueladefutboldeportivoliceo</small></span></a></li>
+          <li><a href="https://www.facebook.com/share/1ARkdKaswE/" target="_blank" rel="noopener"><span class="pi fb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/></svg></span><span>Facebook<small>Escuela Fútbol Deportivo Liceo</small></span></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pie-base">
+      <span>Las fotos de deportistas se publican con autorización de sus apoderados.</span>
+      <span>© <span class="anio2">2026</span> Escuela de Fútbol Deportivo Liceo · <a href="publicar.html" rel="nofollow">Administración</a></span>
+    </div>
+  </div>
 </footer>
 
 <nav class="nav-baja" id="navBaja" aria-label="Menú"><a href="#/" data-nav=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg><span>Inicio</span></a><a href="#/novedades" data-nav="novedades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h13a3 3 0 0 1 3 3v11H7a3 3 0 0 1-3-3z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg><span>Noticias</span></a><a href="#/matricula" data-nav="matricula"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="m9 13 2 2 4-4"/></svg><span>Matrícula</span></a><a href="#/galeria" data-nav="galeria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Galería</span></a><a href="#/contacto" data-nav="contacto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Contacto</span></a></nav>
@@ -1133,6 +1203,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   });
   document.getElementById('anio').textContent = new Date().getFullYear();
   document.getElementById('logoPie').src = document.querySelector('.logo').src;
+  { const l2 = document.getElementById('logoPie2'); if (l2) l2.src = document.querySelector('.logo').src; document.querySelectorAll('.anio2').forEach(e => e.textContent = new Date().getFullYear()); }
   pintarFaq([]);
   llenarCollage();
   ajustarBotones();
