@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /publicar.html
+Disallow: /cuotas.html
+
+Sitemap: https://escueladefutboldeportivoliceo.cl/sitemap.xml
