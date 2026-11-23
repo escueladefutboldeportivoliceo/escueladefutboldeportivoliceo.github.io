@@ -268,6 +268,17 @@
 
 <div class="velo" id="velo" hidden><div class="hoja" id="hoja" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast" role="status"></div>
+<style>
+.grupo-txt{background:var(--blanco);border-radius:18px;margin:10px 0;padding:4px 10px 10px;box-shadow:0 4px 14px rgba(7,18,10,.06)}
+.grupo-txt summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:12px 4px;font-size:17px}
+.grupo-txt summary::-webkit-details-marker{display:none}
+.grupo-txt summary:after{content:"▾";color:var(--suave);margin-left:8px}
+.grupo-txt[open] summary:after{content:"▴"}
+.grupo-txt summary span{font-size:13px;color:var(--suave);margin-left:auto}
+.grupo-txt .item{box-shadow:none;border:1px solid #e6ece7;margin-top:8px}
+.it-txt small,.it-extra small{display:block;font-size:12px;font-weight:800;color:var(--suave);text-transform:uppercase;letter-spacing:.5px}
+.t-actual{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+</style>
 
 <script>
 'use strict';
@@ -302,6 +313,7 @@ const SECCIONES = {
   faq: { t: 'Preguntas', uno: 'pregunta', titulo: 'Pregunta *', texto: 'Respuesta *', vacio: 'Mientras no agregues preguntas, la página muestra 5 preguntas sugeridas. Puedes cargarlas aquí para editarlas.' },
   auspiciador: { t: 'Auspiciadores', uno: 'auspiciador', titulo: 'Nombre *', img: 'Logo', link: 'Sitio web o Instagram', vacio: 'Agrega a las empresas o personas que apoyan a la escuela.' },
   instagram: { t: 'Redes sociales', vacioT: 'publicaciones de redes sociales', uno: 'publicación', titulo: 'Nombre para reconocerla', link: 'Enlace de Instagram, Facebook o Threads *', linkReq: true, vacio: 'Abre la publicación en Instagram, Facebook o Threads, toca Compartir → Copiar enlace y pégalo aquí. Se verá en la página, en la sección "Síguenos en redes" (las más nuevas primero).' },
+  texto: { t: 'Textos de la página' },
   boton: { t: 'Botones del inicio' },
   documento: { t: 'Documentos', uno: 'documento', titulo: 'Nombre del documento *', texto: 'Descripción', archivo: 'Archivo (PDF o imagen)', link: 'O pega un enlace (Google Drive, etc.)', vacio: 'Sube reglamentos, calendarios u otros documentos para los apoderados.' }
 };
@@ -343,12 +355,13 @@ const eventoPasado = p => (p.tipo === 'evento' || p.tipo === 'partido') && p.fec
 function pintarTabs() {
   $('tabsSec').innerHTML = Object.entries(SECCIONES).map(([k, S]) => `<button type="button" class="chip ${k === seccion ? 'on' : ''}" data-s="${k}">${S.t}</button>`).join('');
   $('tabsSec').querySelectorAll('.chip').forEach(b => b.onclick = () => { seccion = b.dataset.s; pintar(); });
-  $('btnNueva').hidden = seccion === 'boton';
+  $('btnNueva').hidden = seccion === 'boton' || seccion === 'texto';
   $('btnNueva').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>' + (seccion === 'pub' ? 'Nueva publicación' : 'Agregar ' + SECCIONES[seccion].uno);
 }
 function pintar() {
   pintarTabs();
   if (seccion === 'boton') { $('chipsFiltro').innerHTML = ''; return pintarBotones(); }
+  if (seccion === 'texto') { $('chipsFiltro').innerHTML = ''; return pintarTextos(); }
   if (seccion !== 'pub') { $('chipsFiltro').innerHTML = ''; return pintarItems(); }
   const n = { '': PUBS.length, pub: PUBS.filter(p => p.publicado && !vencida(p)).length, bor: PUBS.filter(p => !p.publicado).length };
   const ops = [{ v: '', t: 'Todas (' + n[''] + ')' }, { v: 'pub', t: 'En la página (' + n.pub + ')' }, { v: 'bor', t: 'Borradores (' + n.bor + ')' }];
@@ -522,6 +535,100 @@ function pintarItems() {
   $('lista').querySelectorAll('[data-id]').forEach(el => el.onclick = () => editorItem(ITEMS.find(x => x.id === el.dataset.id)));
 }
 
+// ---------- Textos de la página (editar sin GitHub) ----------
+let PAGINA = null;
+const SECC_TXT = [['inicio', 'Portada'], ['entrenamientos', 'Horarios'], ['matricula', 'Matrícula'], ['nosotros', 'Quiénes somos'], ['logros', 'Logros'], ['lugares', 'Dónde entrenamos'], ['contacto', 'Contacto']];
+async function leerPagina() {
+  if (PAGINA) return PAGINA;
+  const r = await fetch(SITIO + '?t=' + Date.now(), { cache: 'no-store' });
+  if (!r.ok) throw new Error('No se pudo leer la página');
+  const doc = new DOMParser().parseFromString(await r.text(), 'text/html');
+  const grupos = {};
+  doc.querySelectorAll('[data-edit]').forEach(el => {
+    const sec = el.closest('.vista, section[id]'); const id = sec ? sec.id : 'inicio';
+    (grupos[id] = grupos[id] || []).push({ k: el.dataset.edit, txt: el.textContent.trim(), tag: el.tagName.toLowerCase(), cls: el.className });
+  });
+  PAGINA = grupos; return grupos;
+}
+const tipoTxt = e => /^h[23]$/.test(e.tag) ? 'Título' : e.cls.includes('dia') ? 'Día' : e.cls.includes('hora') ? 'Horario' : e.cls.includes('lugar') ? 'Lugar' : e.cls.includes('tag') ? 'Etiqueta' : e.cls.includes('cat') ? 'Rótulo' : e.tag === 'strong' || e.tag === 'b' ? 'Destacado' : 'Texto';
+async function pintarTextos() {
+  $('lista').innerHTML = '<p class="muted">Cargando textos de la página…</p>';
+  let g;
+  try { g = await leerPagina(); } catch (e) { $('lista').innerHTML = '<div class="vacio"><b>No se pudo leer la página</b>Revisa tu conexión e intenta de nuevo.</div>'; return; }
+  if (seccion !== 'texto') return;
+  const abiertos = new Set([...document.querySelectorAll('.grupo-txt[open]')].map(d => d.dataset.g));
+  const cambios = {}; ITEMS.filter(x => x.seccion === 'texto').forEach(x => { cambios[x.titulo] = x; });
+  const extras = ITEMS.filter(x => x.seccion === 'texto_extra');
+  $('lista').innerHTML = `<p class="muted" style="margin:0 0 6px">Toca un texto para cambiarlo. Los cambios se ven al instante en la página, sin GitHub. Puedes volver al texto original cuando quieras.</p>` +
+    SECC_TXT.filter(([id]) => g[id]).map(([id, nom]) => `
+      <details class="grupo-txt" data-g="${id}"${(abiertos.size ? abiertos.has(id) : id === 'inicio') ? ' open' : ''}><summary><b>${nom}</b><span>${g[id].filter(e => cambios[e.k]).length + extras.filter(x => x.subtitulo === id).length ? '✏️ con cambios' : ''}</span></summary>
+      ${g[id].map(e => { const c = cambios[e.k]; const actual = c && c.texto != null ? c.texto : e.txt;
+        return `<div class="item it-txt" data-k="${h(e.k)}" data-sec="${id}" style="cursor:pointer"><div class="datos"><small>${tipoTxt(e)}${c ? (c.subtitulo === 'oculto' ? ' · 🙈 oculto' : ' · ✏️ cambiado') : ''}</small><span class="t-actual">${h(actual)}</span></div></div>`; }).join('')}
+      ${extras.filter(x => x.subtitulo === id).map(x => `<div class="item it-extra" data-id="${x.id}" style="cursor:pointer;border-left:4px solid var(--amarillo)"><div class="datos"><small>Texto agregado por ti</small><b>${h(x.titulo && x.titulo !== '-' ? x.titulo : '')}</b><span class="t-actual">${h(x.texto || '')}</span></div></div>`).join('')}
+      ${id !== 'inicio' ? `<button class="btn b-bo b-full" type="button" data-agregar="${id}" style="margin-top:8px">＋ Agregar texto en ${nom}</button>` : ''}
+      </details>`).join('');
+  $('lista').querySelectorAll('.it-txt').forEach(el => el.onclick = () => { const e = g[el.dataset.sec].find(z => z.k === el.dataset.k); editorTexto(e, cambios[e.k]); });
+  $('lista').querySelectorAll('.it-extra').forEach(el => el.onclick = () => editorExtra(el.closest('details').querySelector('[data-agregar]').dataset.agregar, extras.find(x => x.id === el.dataset.id)));
+  $('lista').querySelectorAll('[data-agregar]').forEach(b => b.onclick = () => editorExtra(b.dataset.agregar, null));
+}
+function editorTexto(e, c) {
+  const largo = e.txt.length > 60 || e.tag === 'p';
+  const actual = c && c.texto != null ? c.texto : e.txt;
+  abrirHoja(`<h2>Editar ${tipoTxt(e).toLowerCase()}</h2>
+    <p class="sub">Original: <i>${h(e.txt)}</i></p>
+    <label class="campo"><span>Texto en la página</span>${largo ? `<textarea class="inp" id="tTxt" rows="6">${h(actual)}</textarea>` : `<input class="inp" id="tTxt" value="${h(actual)}">`}</label>
+    <div class="botones dos"><button class="btn b-bo" type="button" data-cerrar>Cancelar</button><button class="btn b-am" type="button" id="tGuardar">Guardar</button></div>
+    <div class="botones">
+      ${c && c.subtitulo === 'oculto' ? '<button class="btn b-bo" type="button" id="tMostrar">👁️ Mostrar de nuevo</button>' : '<button class="btn b-bo" type="button" id="tOcultar">🙈 Ocultar este texto</button>'}
+      ${c ? '<button class="btn b-ro" type="button" id="tOriginal">↩️ Volver al texto original</button>' : ''}
+    </div>`, hoja => {
+    hoja.querySelector('[data-cerrar]').onclick = cerrarHoja;
+    const guardar = async (fila, msg) => {
+      try {
+        const res = fila === null ? await sb.from('web_items').delete().eq('id', c.id)
+          : c ? await sb.from('web_items').update(Object.assign(fila, { updated_at: new Date().toISOString() })).eq('id', c.id)
+          : await sb.from('web_items').insert(Object.assign({ seccion: 'texto', titulo: e.k, visible: true, orden: 0 }, fila));
+        if (res.error) throw res.error;
+        cerrarHoja(); toast(msg); cargar();
+      } catch (err) { toast(esRed(err) ? 'Sin conexión.' : 'No se pudo guardar: ' + (err.message || err), 4500); }
+    };
+    hoja.querySelector('#tGuardar').onclick = () => {
+      const v = hoja.querySelector('#tTxt').value.trim();
+      if (!v) { toast('Escribe el texto, o usa "Ocultar" si no quieres que aparezca.', 4000); return; }
+      if (v === e.txt && c) return guardar(null, 'Texto original restaurado');
+      if (v === e.txt) { cerrarHoja(); return; }
+      guardar({ texto: v, subtitulo: null }, 'Texto guardado');
+    };
+    const bo = hoja.querySelector('#tOcultar'); if (bo) bo.onclick = () => guardar({ subtitulo: 'oculto', texto: c ? c.texto : null }, 'Texto oculto');
+    const bm = hoja.querySelector('#tMostrar'); if (bm) bm.onclick = () => c.texto ? guardar({ subtitulo: null, texto: c.texto }, 'Texto visible') : guardar(null, 'Texto visible');
+    const br = hoja.querySelector('#tOriginal'); if (br) br.onclick = () => guardar(null, 'Texto original restaurado');
+  });
+}
+function editorExtra(sec, x) {
+  const nom = (SECC_TXT.find(s => s[0] === sec) || [sec, sec])[1];
+  abrirHoja(`<h2>${x ? 'Editar' : 'Agregar'} texto</h2><p class="sub">Se agrega como un recuadro nuevo al final de "${h(nom)}".</p>
+    <label class="campo"><span>Título <small>(opcional)</small></span><input class="inp" id="eTit" maxlength="120" value="${h(x && x.titulo !== '-' ? x.titulo : '')}" placeholder="Ej.: Horario de verano"></label>
+    <label class="campo"><span>Texto *</span><textarea class="inp" id="eTxt" rows="6" placeholder="Escribe aquí la información">${h(x ? x.texto || '' : '')}</textarea></label>
+    <label class="campo"><span>Orden</span><input class="inp" id="eOrd" type="number" inputmode="numeric" value="${h(x ? x.orden || 0 : 0)}"><small>Si agregas varios, los números menores salen primero.</small></label>
+    <div class="botones dos"><button class="btn b-bo" type="button" data-cerrar>Cancelar</button><button class="btn b-am" type="button" id="eGuardar">Guardar</button></div>
+    ${x ? '<button class="btn b-ro b-full" type="button" id="eBorrar" style="margin-top:10px">Eliminar este texto</button>' : ''}`, hoja => {
+    hoja.querySelector('[data-cerrar]').onclick = cerrarHoja;
+    hoja.querySelector('#eGuardar').onclick = async () => {
+      const texto = hoja.querySelector('#eTxt').value.trim(); if (!texto) { toast('Escribe el texto.'); return; }
+      const fila = { seccion: 'texto_extra', subtitulo: sec, titulo: hoja.querySelector('#eTit').value.trim() || '-', texto, orden: Number(hoja.querySelector('#eOrd').value) || 0, visible: true, updated_at: new Date().toISOString() };
+      const res = x ? await sb.from('web_items').update(fila).eq('id', x.id) : await sb.from('web_items').insert(fila);
+      if (res.error) { toast('No se pudo guardar: ' + res.error.message, 4500); return; }
+      cerrarHoja(); toast('Texto guardado'); cargar();
+    };
+    const bb = hoja.querySelector('#eBorrar'); if (bb) bb.onclick = async () => {
+      if (!confirm('¿Eliminar este texto?')) return;
+      const { error } = await sb.from('web_items').delete().eq('id', x.id);
+      if (error) { toast('No se pudo eliminar: ' + error.message, 4000); return; }
+      cerrarHoja(); toast('Eliminado'); cargar();
+    };
+  });
+}
+
 function pintarBotones() {
   const fotos = {}; ITEMS.filter(x => x.seccion === 'boton').forEach(x => { fotos[x.titulo] = x; });
   $('lista').innerHTML = `<p class="muted" style="margin:0 0 4px">Cambia la foto, el título o el texto de cada botón del inicio. Lo que dejes vacío usa lo original.</p>` + BOTONES.map(([k, n]) => {
@@ -633,7 +740,7 @@ function editorItem(x) {
     };
     f.addEventListener('submit', async e => {
       e.preventDefault();
-      const titulo = f.titulo.value.trim() || (seccion === 'instagram' ? 'Publicación de Instagram' : '');
+      const titulo = f.titulo.value.trim() || (seccion === 'instagram' ? 'Publicación de ' + (/threads\./i.test(f.link.value) ? 'Threads' : /facebook\.|fb\.watch/i.test(f.link.value) ? 'Facebook' : 'Instagram') : '');
       if (!titulo) { toast('Completa el campo obligatorio.'); return; }
       if (seccion === 'faq' && !f.texto.value.trim()) { toast('Escribe la respuesta.'); return; }
       const link = f.link ? f.link.value.trim() : '';
@@ -699,16 +806,16 @@ async function dibujarHistoria(p) {
     const r = Math.max(W / foto.width, H / foto.height), fw = foto.width * r, fh = foto.height * r;
     c.drawImage(foto, (W - fw) / 2, (H - fh) / 2, fw, fh);
     const v = c.createLinearGradient(0, 0, 0, H);
-    v.addColorStop(0, 'rgba(0,0,0,.55)'); v.addColorStop(.25, 'rgba(0,0,0,.05)'); v.addColorStop(.5, 'rgba(0,0,0,.25)'); v.addColorStop(1, 'rgba(6,30,14,.95)');
+    v.addColorStop(0, 'rgba(0,0,0,.45)'); v.addColorStop(.12, 'rgba(0,0,0,.5)'); v.addColorStop(.3, 'rgba(0,0,0,.05)'); v.addColorStop(.5, 'rgba(0,0,0,.25)'); v.addColorStop(1, 'rgba(6,30,14,.95)');
     c.fillStyle = v; c.fillRect(0, 0, W, H);
   } else {
     c.fillStyle = 'rgba(242,194,48,.9)'; c.save(); c.translate(W - 60, -40); c.rotate(.35); c.fillRect(0, 0, 120, 900); c.restore();
   }
   // encabezado: escudo + nombre
-  if (escudo) { c.save(); c.beginPath(); c.arc(150, 190, 82, 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill(); c.clip(); c.drawImage(escudo, 72, 112, 156, 156); c.restore(); }
+  if (escudo) { c.save(); c.beginPath(); c.arc(150, 330, 82, 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill(); c.clip(); c.drawImage(escudo, 72, 252, 156, 156); c.restore(); }
   c.fillStyle = '#fff'; c.textBaseline = 'middle';
-  c.font = '600 34px Poppins, Arial'; c.fillText('ESCUELA DE FÚTBOL', 262, 160);
-  c.font = '52px Anton, Impact, Arial'; c.fillText('DEPORTIVO LICEO', 262, 216);
+  c.font = '600 34px Poppins, Arial'; c.fillText('ESCUELA DE FÚTBOL', 262, 300);
+  c.font = '52px Anton, Impact, Arial'; c.fillText('DEPORTIVO LICEO', 262, 356);
   // bloque inferior
   c.font = '700 70px Poppins, Arial';
   const tit = lineas(c, p.titulo, W - 160, 4);
