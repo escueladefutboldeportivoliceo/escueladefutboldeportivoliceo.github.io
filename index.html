@@ -569,7 +569,8 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   .pie-pc{font-size:16px}
   footer>*:not(.pie-pc){display:none!important}
   .pie-pc{display:block}
-  .pie-cols{max-width:1180px;margin:0 auto;padding:54px 40px 40px;display:grid;grid-template-columns:1fr .8fr 1.55fr 1.5fr;gap:32px}
+  .pie-cols{max-width:1180px;margin:0 auto;padding:54px 40px 40px;display:grid;grid-template-columns:1.15fr 1.25fr 1fr;gap:48px;max-width:1080px}
+  .pie-pc ul.pie-links{display:grid;grid-template-columns:repeat(2,max-content);column-gap:36px;row-gap:14px}
   .pie-marca img{width:96px;height:96px;border-radius:50%;margin-bottom:12px}
   .pie-marca b{display:block;color:var(--verde);font-size:20px;font-weight:900;text-transform:uppercase;letter-spacing:1px}
   .pie-nombre{display:block;color:var(--verde-osc);font-weight:800;font-size:16px;margin-top:4px}
@@ -589,7 +590,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   .pi.ig{background:linear-gradient(45deg,#f09433,#dc2743 50%,#bc1888);color:#fff}
   .pi.fb{background:#1877f2;color:#fff}
   .pie-datos a:hover .pi{transform:scale(1.08)}
-  .pie-base{border-top:1px solid #e3ebe5;max-width:1180px;margin:0 auto;padding:18px 40px 26px;display:flex;justify-content:space-between;gap:20px;font-size:14px;color:var(--gris);font-weight:600}
+  .pie-base{border-top:1px solid #e3ebe5;max-width:1080px;margin:0 auto;padding:18px 40px 26px;display:flex;justify-content:space-between;gap:20px;font-size:14px;color:var(--gris);font-weight:600}
   .pie-base a{color:var(--gris)}
   /* páginas internas más anchas y galería en cuadrícula */
   body:not(.en-inicio) main.wrap{max-width:1000px}
@@ -804,12 +805,6 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   <a class="adm" href="publicar.html" rel="nofollow">Administración</a>
   <div class="pie-pc">
     <div class="pie-cols">
-      <div class="pie-marca">
-        <img id="logoPie2" alt="Escudo Escuela de Fútbol Deportivo Liceo">
-        <b>¡Vamos Liceo!</b>
-        <span class="pie-nombre">Escuela de Fútbol Deportivo Liceo</span>
-        <p>Formamos deportistas con proyección de habilidades para el fútbol y la vida.</p>
-      </div>
       <div class="pie-col">
         <h4>Secciones</h4>
         <ul class="pie-links"><li><a href="#/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Inicio</a></li><li><a href="#/entrenamientos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Horarios</a></li><li><a href="#/matricula"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Matrícula</a></li><li><a href="#/novedades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Noticias</a></li><li><a href="#/galeria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Galería</a></li><li><a href="#/preguntas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Preguntas frecuentes</a></li><li><a href="#/contacto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>Contacto</a></li></ul>
