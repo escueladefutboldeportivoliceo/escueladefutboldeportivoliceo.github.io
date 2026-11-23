@@ -1072,7 +1072,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     if (st && id) return 'https://www.facebook.com/' + id[1] + '/posts/' + st[1];
     return l.split('?')[0].includes('permalink.php') ? l : l.replace(/[?&](mibextid|rdid|share_url|__cft__|__tn__)[^&]*/g, '');
   };
-  const thUrl = l => { const m = String(l || '').match(/threads\.(?:net|com)\/(@[\w.]+)\/post\/([\w-]+)/i); return m ? 'https://www.threads.net/' + m[1] + '/post/' + m[2] : null; };
+  const thUrl = l => { l = String(l || ''); const m = l.match(/threads\.(?:net|com)\/(@[\w.]+)\/post\/([\w-]+)/i); if (m) return 'https://www.threads.net/' + m[1] + '/post/' + m[2]; const t = l.match(/threads\.(?:net|com)\/t\/([\w-]+)/i); return t ? 'https://www.threads.net/t/' + t[1] : null; };
   const redUrl = l => igUrl(l) || thUrl(l) || fbUrl(l);
   function redEmbed(l) {
     const ig = igUrl(l), th = thUrl(l), fb = fbUrl(l);

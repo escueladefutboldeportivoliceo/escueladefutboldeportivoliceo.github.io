@@ -464,7 +464,7 @@ function editor(p) {
       if (!titulo) { toast('Escribe un título.'); f.titulo.focus(); return; }
       const linkIg = f.link.value.trim();
       if (fbCorto(linkIg)) { toast(MSG_FB, 7000); f.link.focus(); return; }
-      if (linkIg && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+|facebook\.com\/|fb\.watch\/|threads\.(net|com)\/@[\w.]+\/post\//i.test(linkIg)) { toast('El enlace no es válido. En Instagram, Facebook o Threads toca Compartir → Copiar enlace.', 4500); f.link.focus(); return; }
+      if (linkIg && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+|facebook\.com\/|fb\.watch\/|threads\.(net|com)\/(@[\w.]+\/post\/|t\/)[\w-]+/i.test(linkIg)) { toast('El enlace no es válido. En Instagram, Facebook o Threads toca Compartir → Copiar enlace.', 4500); f.link.focus(); return; }
       const bt = hoja.querySelector('#bGuardar'); bt.disabled = true; bt.textContent = 'Guardando…';
       try {
         const esEv = ['evento', 'partido', 'logro'].includes(f.tipo.value);
@@ -638,8 +638,9 @@ function editorItem(x) {
       if (seccion === 'faq' && !f.texto.value.trim()) { toast('Escribe la respuesta.'); return; }
       const link = f.link ? f.link.value.trim() : '';
       if (link && !/^https?:\/\//i.test(link)) { toast('El enlace debe empezar con https://'); return; }
+      if (/(instagram\.com|threads\.(net|com)|facebook\.com)\/@?[\w.]+\/?(\?.*)?$/i.test(link) && !/story_fbid|\/posts\/|\/p\/|\/reel\/|\/post\//i.test(link)) { toast('Ese enlace es del perfil, no de una publicación. Abre la publicación que quieres mostrar, toca Compartir → Copiar enlace y pégalo aquí.', 7000); return; }
       if (fbCorto(link)) { toast(MSG_FB, 7000); return; }
-      if (seccion === 'instagram' && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+|facebook\.com\/|fb\.watch\/|threads\.(net|com)\/@[\w.]+\/post\//i.test(link)) { toast('Pega el enlace de una publicación de Instagram, Facebook o Threads (Compartir → Copiar enlace).', 4500); return; }
+      if (seccion === 'instagram' && !/instagram\.com\/(?:[^/]+\/)?(p|reel|tv)\/[\w-]+|facebook\.com\/|fb\.watch\/|threads\.(net|com)\/(@[\w.]+\/post\/|t\/)[\w-]+/i.test(link)) { toast('Pega el enlace de una publicación de Instagram, Facebook o Threads (Compartir → Copiar enlace).', 4500); return; }
       const bt = hoja.querySelector('#bGuardarItem'); bt.disabled = true; bt.textContent = 'Guardando…';
       try {
         const fila = { seccion, titulo, subtitulo: f.subtitulo ? f.subtitulo.value.trim() || null : null, texto: f.texto ? f.texto.value.trim() || null : null,
@@ -673,7 +674,8 @@ function cargarImg(src) {
     if (!src) return res(null);
     const usar = u => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = u; };
     if (/^data:/.test(src)) return usar(src);
-    fetch(src).then(r => r.ok ? r.blob() : null).then(b => b ? usar(URL.createObjectURL(b)) : res(null)).catch(() => res(null));
+    const directo = () => { const im = new Image(); im.crossOrigin = 'anonymous'; im.onload = () => res(im); im.onerror = () => res(null); im.src = src + (src.includes('?') ? '&' : '?') + 'cv=' + Date.now(); };
+    fetch(src, { mode: 'cors', cache: 'no-store' }).then(r => r.ok ? r.blob() : null).then(b => b ? usar(URL.createObjectURL(b)) : directo()).catch(directo);
   });
 }
 function lineas(ctx, texto, ancho, max) {
