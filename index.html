@@ -471,7 +471,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 
 /* Tarjetas de redes: todas del mismo tamaño */
 .ig-fila{align-items:stretch}
-.ig-item{height:548px;display:flex;flex-direction:column;overflow:hidden;border-radius:16px;background:#fff;border:1px solid #e3ebe5;box-shadow:0 8px 20px -12px rgba(0,0,0,.3)}
+.ig-item{height:470px;display:flex;flex-direction:column;overflow:hidden;border-radius:16px;background:#fff;border:1px solid #e3ebe5;box-shadow:0 8px 20px -12px rgba(0,0,0,.3)}
 .ig-emb{flex:1;min-height:0;overflow:hidden;position:relative}
 .ig-emb:after{content:"";position:absolute;left:0;right:0;bottom:0;height:26px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff);pointer-events:none}
 .ig-emb .instagram-media,.ig-emb iframe,.ig-emb blockquote{border:0!important;box-shadow:none!important;border-radius:0!important;margin:0!important;min-width:0!important;width:100%!important}
@@ -945,7 +945,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     if (!posts.length) { el.hidden = true; el.innerHTML = ''; return; }
     el.innerHTML = `<div class="ausp-cab"><span>Síguenos en redes</span></div>
       <div class="redes-btns"><a class="rb ig" href="https://www.instagram.com/escueladefutboldeportivoliceo/" target="_blank" rel="noopener">Instagram</a><a class="rb fb" href="https://www.facebook.com/share/1ARkdKaswE/" target="_blank" rel="noopener">Facebook</a></div>
-      <div class="ig-fila">${posts.map(x => `<div class="ig-item"><div class="ig-emb">${x.html}</div><a class="ig-ver red-${x.red.toLowerCase()}" href="${x.url}" target="_blank" rel="noopener">Ver en ${x.red} ›</a></div>`).join('')}</div>`;
+      <div class="ig-fila">${posts.map(x => `<div class="ig-item"><div class="ig-emb">${x.html}</div></div>`).join('')}</div>`;
     el.hidden = false;
     cargarIg();
   }
