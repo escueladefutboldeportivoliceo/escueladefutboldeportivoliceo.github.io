@@ -484,9 +484,39 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 
 /* ===== Computador (1000 px o más): diseño a dos columnas, sin tocar el celular ===== */
 .cta-pc{display:none}
-.ig-col{display:contents}
-.ig-perfil{display:none}
 .pie-pc{display:none}
+/* Redes: botón de cada red debajo de su publicación (celular y computador) */
+.redes-btns{display:none}
+.ig-col{display:flex;flex-direction:column;gap:10px;flex:0 0 330px;max-width:330px;scroll-snap-align:start}
+.ig-col .ig-item{flex:none;max-width:none;width:100%}
+.ig-perfil{display:flex;align-items:center;justify-content:center;height:48px;border-radius:999px;color:#fff;font-weight:900;font-size:15px;text-decoration:none}
+.ig-perfil.red-instagram{background:linear-gradient(45deg,#f09433,#dc2743 50%,#bc1888)}
+.ig-perfil.red-facebook{background:#1877f2}
+.ig-perfil.red-threads{background:#111}
+.pi.th{background:#111;color:#fff}
+/* Pie de página igual al de computador, adaptado al celular */
+@media (max-width:999px){
+  footer{padding:0 0 calc(100px + env(safe-area-inset-bottom,0px));text-align:left;font-size:0;margin-top:40px;border-top:1px solid #e3ebe5}
+  footer>*:not(.pie-pc){display:none!important}
+  .pie-pc{display:block;font-size:16px}
+  .pie-cols{padding:30px 20px 10px;display:flex;flex-direction:column;gap:28px}
+  .pie-col h4{font-size:13px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--verde);margin:0 0 14px}
+  .pie-links,.pie-datos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+  .pie-pc ul.pie-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;row-gap:14px}
+  .pie-links a{display:inline-flex;align-items:center;gap:6px;color:var(--verde-osc);text-decoration:none;font-weight:700;font-size:16px}
+  .pie-links a svg{width:16px;height:16px;flex:none;color:var(--amarillo)}
+  .pie-datos a{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--verde-osc);font-weight:800;font-size:16px;min-width:0}
+  .pie-datos a>span:last-child{min-width:0}
+  .pie-datos small{display:block;font-weight:600;font-size:12.5px;color:var(--gris);overflow-wrap:anywhere}
+  .pie-datos a[href^="mailto"] small{font-size:clamp(10.5px,3.2vw,12.5px);white-space:nowrap}
+  .pi{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--verde-claro);color:var(--verde)}
+  .pi svg{width:22px;height:22px}
+  .pi.wsp{background:#25D366;color:#fff}
+  .pi.ig{background:linear-gradient(45deg,#f09433,#dc2743 50%,#bc1888);color:#fff}
+  .pi.fb{background:#1877f2;color:#fff}
+  .pie-base{border-top:1px solid #e3ebe5;margin:10px 20px 0;padding:16px 0 0;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--gris);font-weight:600;text-align:center}
+  .pie-base a{color:var(--gris)}
+}
 @media (min-width:1000px){
   header.portada{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:64px;align-items:center;text-align:left;
     padding:120px max(40px,calc((100vw - 1180px)/2)) 110px;min-height:min(100vh,820px)}
@@ -545,8 +575,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   body.en-inicio .nav-top:not(.solida) .marca{opacity:0;pointer-events:none}
   .nav-top .marca{transition:opacity .3s}
   /* redes: cada botón debajo de su publicación */
-  .redes-btns{display:none}
-  .ig-col{display:flex;flex-direction:column;align-items:stretch;gap:12px;flex:0 0 340px;max-width:340px}
+  .ig-col{flex:0 0 340px;max-width:340px;gap:12px}
   .ig-col .ig-item{flex:none;max-width:none;width:100%}
   .ig-perfil{display:flex;align-items:center;justify-content:center;height:50px;border-radius:999px;color:#fff;font-weight:900;font-size:15px;text-decoration:none;transition:transform .2s}
   .ig-perfil:hover{transform:translateY(-2px)}
@@ -600,6 +629,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   .galeria img{aspect-ratio:4/3}
   #galeria .desliza{display:none}
 }
+@media (max-width:340px){.pie-datos a[href^="mailto"] small{white-space:normal;overflow-wrap:anywhere}}
 
 </style>
 </head>
@@ -822,6 +852,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
         <ul class="pie-datos">
           <li><a href="https://www.instagram.com/escueladefutboldeportivoliceo/" target="_blank" rel="noopener"><span class="pi ig"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span><span>Instagram<small>@escueladefutboldeportivoliceo</small></span></a></li>
           <li><a href="https://www.facebook.com/share/1ARkdKaswE/" target="_blank" rel="noopener"><span class="pi fb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/></svg></span><span>Facebook<small>Escuela Fútbol Deportivo Liceo</small></span></a></li>
+          <li><a href="https://www.threads.com/@escueladefutboldeportivoliceo" target="_blank" rel="noopener"><span class="pi th"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 11.2c-.4-2.6-2.2-3.9-4.6-3.9-2.8 0-4.6 2-4.6 4.8 0 2.9 1.9 4.9 4.8 4.9 2.6 0 4.2-1.5 4.2-3.5 0-1.8-1.4-2.9-3.4-2.9-1.7 0-2.9.9-2.9 2.2 0 1.2 1 2 2.3 2 2.4 0 3.6-2 3.6-4.6V9"/><path d="M19.5 7.5A9 9 0 1 0 21 13"/></svg></span><span>Threads<small>@escueladefutboldeportivoliceo</small></span></a></li>
         </ul>
       </div>
     </div>
@@ -1097,7 +1128,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     if (!posts.length) { el.hidden = true; el.innerHTML = ''; return; }
     el.innerHTML = `<div class="ausp-cab"><span>Síguenos en redes</span></div>
       <div class="redes-btns"><a class="rb ig" href="https://www.instagram.com/escueladefutboldeportivoliceo/" target="_blank" rel="noopener">Instagram</a><a class="rb fb" href="https://www.facebook.com/share/1ARkdKaswE/" target="_blank" rel="noopener">Facebook</a></div>
-      <div class="ig-fila">${posts.map(x => `<div class="ig-col"><div class="ig-item"><div class="ig-emb">${x.html}</div></div><a class="ig-perfil red-${x.red.toLowerCase()}" href="${({ Instagram: 'https://www.instagram.com/escueladefutboldeportivoliceo/', Facebook: 'https://www.facebook.com/share/1ARkdKaswE/' })[x.red] || x.url}" target="_blank" rel="noopener">${x.red}</a></div>`).join('')}</div>`;
+      <div class="ig-fila">${posts.map(x => `<div class="ig-col"><div class="ig-item"><div class="ig-emb">${x.html}</div></div><a class="ig-perfil red-${x.red.toLowerCase()}" href="${({ Instagram: 'https://www.instagram.com/escueladefutboldeportivoliceo/', Facebook: 'https://www.facebook.com/share/1ARkdKaswE/', Threads: 'https://www.threads.com/@escueladefutboldeportivoliceo' })[x.red] || x.url}" target="_blank" rel="noopener">${x.red}</a></div>`).join('')}</div>`;
     el.hidden = false;
     cargarIg();
   }
