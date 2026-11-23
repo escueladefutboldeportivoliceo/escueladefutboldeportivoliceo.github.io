@@ -484,6 +484,8 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 
 /* ===== Computador (1000 px o más): diseño a dos columnas, sin tocar el celular ===== */
 .cta-pc{display:none}
+.ig-col{display:contents}
+.ig-perfil{display:none}
 @media (min-width:1000px){
   header.portada{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:64px;align-items:center;text-align:left;
     padding:120px max(40px,calc((100vw - 1180px)/2)) 110px;min-height:min(100vh,820px)}
@@ -524,6 +526,29 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   .ig-item{flex:0 0 340px;max-width:340px}
   #igInicio .ausp-cab{justify-content:center}
   #igInicio .ausp-cab span{font-size:15px}
+  /* ajustes pedidos: menos verde, foto más grande, botones más grandes */
+  header.portada{grid-template-columns:minmax(0,.9fr) minmax(0,1.3fr);column-gap:56px;padding-top:96px;padding-bottom:84px;min-height:0}
+  .sl{min-height:clamp(300px,calc(100vh - 360px),440px)}
+  .p-der:has(#cuenta[hidden]) .sl{min-height:clamp(380px,calc(100vh - 240px),520px)}
+  .sl-info b{font-size:32px}
+  #cuenta .cuenta{padding:12px 16px}
+  .cu-num b{font-size:22px}
+  .cta-pc{gap:14px;margin-top:30px}
+  .cta-pc a{padding:19px 36px;font-size:18px}
+  .portada h1{font-size:60px}
+  .portada h1 span{font-size:92px}
+  /* el escudo de la barra solo aparece al bajar (arriba ya está el grande) */
+  body.en-inicio .nav-top:not(.solida) .marca{opacity:0;pointer-events:none}
+  .nav-top .marca{transition:opacity .3s}
+  /* redes: cada botón debajo de su publicación */
+  .redes-btns{display:none}
+  .ig-col{display:flex;flex-direction:column;align-items:stretch;gap:12px;flex:0 0 340px;max-width:340px}
+  .ig-col .ig-item{flex:none;max-width:none;width:100%}
+  .ig-perfil{display:flex;align-items:center;justify-content:center;height:50px;border-radius:999px;color:#fff;font-weight:900;font-size:15px;text-decoration:none;transition:transform .2s}
+  .ig-perfil:hover{transform:translateY(-2px)}
+  .ig-perfil.red-instagram{background:linear-gradient(45deg,#f09433,#dc2743 50%,#bc1888)}
+  .ig-perfil.red-facebook{background:#1877f2}
+  .ig-perfil.red-threads{background:#111}
   /* páginas internas más anchas y galería en cuadrícula */
   body:not(.en-inicio) main.wrap{max-width:1000px}
   .galeria{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;overflow:visible;margin:0;padding:0}
@@ -1004,7 +1029,7 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
     if (!posts.length) { el.hidden = true; el.innerHTML = ''; return; }
     el.innerHTML = `<div class="ausp-cab"><span>Síguenos en redes</span></div>
       <div class="redes-btns"><a class="rb ig" href="https://www.instagram.com/escueladefutboldeportivoliceo/" target="_blank" rel="noopener">Instagram</a><a class="rb fb" href="https://www.facebook.com/share/1ARkdKaswE/" target="_blank" rel="noopener">Facebook</a></div>
-      <div class="ig-fila">${posts.map(x => `<div class="ig-item"><div class="ig-emb">${x.html}</div></div>`).join('')}</div>`;
+      <div class="ig-fila">${posts.map(x => `<div class="ig-col"><div class="ig-item"><div class="ig-emb">${x.html}</div></div><a class="ig-perfil red-${x.red.toLowerCase()}" href="${({ Instagram: 'https://www.instagram.com/escueladefutboldeportivoliceo/', Facebook: 'https://www.facebook.com/share/1ARkdKaswE/' })[x.red] || x.url}" target="_blank" rel="noopener">${x.red}</a></div>`).join('')}</div>`;
     el.hidden = false;
     cargarIg();
   }
