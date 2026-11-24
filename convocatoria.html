@@ -53,11 +53,12 @@
   .btn-resumen{display:block;width:calc(100% - 24px);margin:12px 12px 0;height:48px;border:2px solid var(--verde);border-radius:14px;
     background:#fff;color:var(--verde-osc);font-size:16px;font-weight:700}
   .candado{font-size:18px;flex:none}
+  .quitar{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:#fdeaea;color:var(--rojo);font-size:20px;font-weight:700}
   .profe{margin:16px 12px 0;background:#fff7d6;border:2px solid var(--amarillo);border-radius:12px;padding:10px 12px;font-weight:700;color:#5a4300;text-align:center}
   .estado{margin:10px 16px;font-size:13px;color:#666;text-align:center;min-height:18px}
   .aviso{margin:30px 18px;background:#fff;border-radius:14px;padding:20px;text-align:center;font-size:16px}
   .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
-    background:var(--verde-osc);color:#fff;padding:10px 18px;border-radius:30px;font-weight:600;opacity:0;transition:.25s;pointer-events:none}
+    background:var(--verde-osc);color:#fff;padding:10px 18px;border-radius:30px;font-weight:600;white-space:nowrap;opacity:0;transition:.25s;pointer-events:none}
   .toast.ver{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
@@ -152,6 +153,7 @@ function pintar(){
     if(i!==activo){ sel.value=e; }
     sel.className=sel.value;
     sel.disabled=!!j.bloqueado;
+    li.querySelector(".quitar").hidden=!datos.admin;
   });
   $("#nSi").textContent=si; $("#nNo").textContent=no; $("#nPend").textContent=js.length-si-no;
   $("#modoProfe").hidden=!datos.admin;
@@ -164,8 +166,25 @@ function fila(i){
     <select data-i="${i}" aria-label="¿Participa?">
       <option value="">— Marcar —</option><option value="si">✅ Sí</option><option value="no">❌ No</option>
     </select>`;
-  li.querySelector("select").addEventListener("change", e=>marcar(i, e.target.value, e.target));
+  li.querySelector("select").addEventListener("change", e=>marcar(idxReal(i), e.target.value, e.target));
+  const q=document.createElement("button"); q.type="button"; q.className="quitar"; q.textContent="✕"; q.hidden=true;
+  q.setAttribute("aria-label","Sacar de la lista");
+  q.addEventListener("click", ()=>quitar(i));
+  li.appendChild(q);
   return li;
+}
+
+// Posición real del jugador en la base (no cambia aunque se saque a alguien)
+function idxReal(pos){ const j=datos&&datos.jugadores[pos]; return j && typeof j.i==="number" ? j.i : pos; }
+
+async function quitar(pos){
+  const j=datos&&datos.jugadores[pos]; if(!j) return;
+  if(!confirm(`¿Sacar a ${j.nombre} de la lista?`)) return;
+  try{
+    const r=await rpc("conv_lista_quitar",{p_id:ID,p_idx:idxReal(pos),p_admin:ADMIN});
+    if(!r) throw new Error();
+    datos=r; guardarCache(); pintar(); toast(`${j.nombre} salió de la lista`);
+  }catch(e){ toast("No se pudo sacar. Revisa tu señal."); }
 }
 
 async function marcar(i, estado, sel){
