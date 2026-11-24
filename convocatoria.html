@@ -52,6 +52,8 @@
   .fila-add button{height:46px;padding:0 16px;border:0;border-radius:12px;background:var(--verde);color:#fff;font-size:16px;font-weight:700}
   .btn-resumen{display:block;width:calc(100% - 24px);margin:12px 12px 0;height:48px;border:2px solid var(--verde);border-radius:14px;
     background:#fff;color:var(--verde-osc);font-size:16px;font-weight:700}
+  .candado{font-size:18px;flex:none}
+  .profe{margin:16px 12px 0;background:#fff7d6;border:2px solid var(--amarillo);border-radius:12px;padding:10px 12px;font-weight:700;color:#5a4300;text-align:center}
   .estado{margin:10px 16px;font-size:13px;color:#666;text-align:center;min-height:18px}
   .aviso{margin:30px 18px;background:#fff;border-radius:14px;padding:20px;text-align:center;font-size:16px}
   .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
@@ -72,7 +74,8 @@
   <div class="chip pend"><b id="nPend">0</b><span>Sin marcar</span></div>
 </div>
 
-<p class="ayuda">Busca el nombre de tu hijo y elige <b>Sí</b> o <b>No</b>. Se guarda solo.</p>
+<div class="profe" id="modoProfe" hidden>Modo profesor: puedes cambiar cualquier marca</div>
+<p class="ayuda">Busca el nombre de tu hijo y elige <b>Sí</b> o <b>No</b>. Se guarda solo. Solo tú podrás cambiar lo que marques 🔒</p>
 <ul id="lista"></ul>
 <form class="agregar" id="formAgregar">
   <label for="nuevo">¿No está tu hijo en la lista? Anótalo:</label>
@@ -93,8 +96,21 @@
 <script>
 const SB_URL = "https://ngpsxeaxrdthyaqdazvk.supabase.co";
 const SB_KEY = "sb_publishable_f0sYBMA-PUGxlAmhXJVzBA_TGpbboje";
-const ID = new URLSearchParams(location.search).get("c") || "";
-const CACHE = "conv_" + ID;
+const QS = new URLSearchParams(location.search);
+const ID = QS.get("c") || "";
+const ADMIN = QS.get("p") || null;   // clave del profesor (solo en su enlace)
+const CACHE = "conv_" + ID + (ADMIN ? "_p" : "");
+const LINK_PUBLICO = location.origin + location.pathname + "?c=" + encodeURIComponent(ID);
+// Identificador de este teléfono: así cada apoderado solo puede cambiar lo que marcó él
+const DISP = (()=>{
+  let d=null; try{ d=localStorage.getItem("conv_dispositivo"); }catch(e){}
+  if(!d || d.length<16){
+    const a=new Uint8Array(16); crypto.getRandomValues(a);
+    d=Array.from(a,b=>b.toString(16).padStart(2,"0")).join("");
+    try{ localStorage.setItem("conv_dispositivo", d); }catch(e){}
+  }
+  return d;
+})();
 let datos = null, ocupado = false;
 
 const $ = s => document.querySelector(s);
@@ -131,17 +147,20 @@ function pintar(){
     const e=j.estado||""; if(e==="si")si++; else if(e==="no")no++;
     const li=ul.children[i];
     li.className=e; li.querySelector(".nombre").textContent=j.nombre; li.querySelector(".num").textContent=i+1;
+    li.querySelector(".candado").hidden=!j.bloqueado;
     const sel=li.querySelector("select");
     if(i!==activo){ sel.value=e; }
     sel.className=sel.value;
+    sel.disabled=!!j.bloqueado;
   });
   $("#nSi").textContent=si; $("#nNo").textContent=no; $("#nPend").textContent=js.length-si-no;
+  $("#modoProfe").hidden=!datos.admin;
   if(datos.updated_at) $("#estado").textContent="Última actualización: "+hora(datos.updated_at);
 }
 
 function fila(i){
   const li=document.createElement("li");
-  li.innerHTML=`<span class="num"></span><span class="nombre"></span>
+  li.innerHTML=`<span class="num"></span><span class="nombre"></span><span class="candado" hidden title="Ya lo marcó su apoderado">🔒</span>
     <select data-i="${i}" aria-label="¿Participa?">
       <option value="">— Marcar —</option><option value="si">✅ Sí</option><option value="no">❌ No</option>
     </select>`;
@@ -153,9 +172,10 @@ async function marcar(i, estado, sel){
   sel.className=estado; sel.closest("li").className=estado;
   sel.disabled=true;
   try{
-    const r = await rpc("conv_marcar",{p_id:ID,p_idx:i,p_estado:estado});
+    const r = await rpc("conv_lista_marcar",{p_id:ID,p_idx:i,p_estado:estado,p_disp:DISP,p_admin:ADMIN});
     if(!r) throw new Error("sin respuesta");
     datos=r; guardarCache(); sel.disabled=false; sel.blur(); pintar();
+    if(r.error==="bloqueado"){ toast("Este jugador ya lo marcó su apoderado 🔒"); return; }
     toast(estado==="si"?"Guardado: participa ✅":estado==="no"?"Guardado: no participa":"Marca borrada");
   }catch(err){
     sel.disabled=false; toast("No se pudo guardar. Revisa tu señal.");
@@ -168,7 +188,7 @@ function guardarCache(){ try{ localStorage.setItem(CACHE, JSON.stringify(datos))
 async function cargar(manual){
   if(ocupado) return; ocupado=true;
   try{
-    const r = await rpc("conv_ver",{p_id:ID});
+    const r = await rpc("conv_lista_ver",{p_id:ID,p_disp:DISP,p_admin:ADMIN});
     if(!r){ $("#lista").innerHTML=""; $("#lista").insertAdjacentHTML("afterend",""); avisar("Esta convocatoria no existe o ya se cerró."); }
     else { datos=r; guardarCache(); pintar(); if(manual) toast("Lista actualizada"); }
   }catch(e){
@@ -186,7 +206,7 @@ $("#formAgregar").addEventListener("submit", async e=>{
   if(nombre.length<2){ toast("Escribe el nombre"); return; }
   const btn=e.target.querySelector("button"); btn.disabled=true;
   try{
-    const r=await rpc("conv_agregar",{p_id:ID,p_nombre:nombre});
+    const r=await rpc("conv_lista_agregar",{p_id:ID,p_nombre:nombre,p_disp:DISP,p_admin:ADMIN});
     if(!r) throw new Error();
     datos=r; guardarCache(); pintar(); inp.value=""; inp.blur();
     toast("Anotado: participa ✅");
@@ -212,7 +232,7 @@ $("#btnResumen").addEventListener("click", async ()=>{
 $("#btnAct").addEventListener("click",()=>cargar(true));
 $("#btnWsp").addEventListener("click",()=>{
   const t=(datos&&datos.titulo)||"Convocatoria";
-  const msg=`⚽ *${t}*\nApoderados: marquen aquí si su hijo participa 👇\n${location.href}`;
+  const msg=`⚽ *${t}*\nApoderados: marquen aquí si su hijo participa 👇\n${LINK_PUBLICO}`;
   location.href="https://wa.me/?text="+encodeURIComponent(msg);
 });
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden) cargar(); });
