@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b3d1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Convocatoria">
+<title>Convocatoria · Escuela de Fútbol Deportivo Liceo</title>
+<style>
+  :root{
+    --verde:#0f7a3a; --verde-osc:#0b3d1f; --verde-claro:#25b45c; --amarillo:#d4a017;
+    --negro:#111; --blanco:#fff; --gris:#f2f5f3; --rojo:#c62828;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:16px;color:var(--negro);
+    background:var(--gris);min-height:100vh;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  header{background:linear-gradient(135deg,var(--verde-osc) 0%,var(--verde) 60%,var(--verde-claro) 100%);color:#fff;
+    padding:calc(18px + env(safe-area-inset-top)) 18px 22px;position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;
+    background:radial-gradient(circle,rgba(212,160,23,.55),transparent 70%)}
+  .club{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#f4d774;font-weight:700}
+  h1{font-size:26px;line-height:1.15;margin-top:6px;position:relative;z-index:1}
+  .detalle{margin-top:8px;font-size:15px;opacity:.92;white-space:pre-line;position:relative;z-index:1}
+  .resumen{display:flex;gap:8px;margin:-14px 14px 0;position:relative;z-index:2}
+  .chip{flex:1;background:#fff;border-radius:14px;padding:10px 6px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .chip b{display:block;font-size:24px}
+  .chip span{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:.05em}
+  .chip.si b{color:var(--verde)} .chip.no b{color:var(--rojo)} .chip.pend b{color:#8a6d00}
+  .ayuda{margin:16px 16px 8px;font-size:15px;color:#333}
+  ul{list-style:none;margin:0 12px}
+  li{background:#fff;border-radius:14px;margin-bottom:8px;padding:10px 10px 10px 14px;display:flex;align-items:center;gap:10px;
+    border-left:6px solid #d0d6d2;box-shadow:0 1px 4px rgba(0,0,0,.05);transition:border-color .2s}
+  li.si{border-left-color:var(--verde-claro)} li.no{border-left-color:var(--rojo)}
+  .num{width:26px;color:#777;font-weight:700;font-size:15px;flex:none}
+  .nombre{flex:1;font-weight:600;font-size:17px;min-width:0}
+  select{appearance:none;-webkit-appearance:none;font-size:16px;font-weight:700;border-radius:12px;border:2px solid #c9d1cc;
+    padding:0 34px 0 12px;height:46px;min-width:128px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23333' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center;color:#333}
+  select.si{background-color:#e3f6ea;border-color:var(--verde-claro);color:var(--verde-osc)}
+  select.no{background-color:#fdeaea;border-color:var(--rojo);color:var(--rojo)}
+  select:disabled{opacity:.6}
+  .barra{position:fixed;left:0;right:0;bottom:0;background:var(--negro);padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    display:flex;gap:10px}
+  .barra button{flex:1;height:52px;border:0;border-radius:14px;font-size:16px;font-weight:700}
+  #btnWsp{background:#25d366;color:#05381b}
+  #btnAct{background:var(--amarillo);color:#1a1200;flex:0 0 120px}
+  .agregar{margin:14px 12px 0;background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+  .agregar label{display:block;font-size:15px;font-weight:600;margin-bottom:8px}
+  .fila-add{display:flex;gap:8px}
+  .fila-add input{flex:1;min-width:0;height:46px;font-size:16px;border:2px solid #c9d1cc;border-radius:12px;padding:0 12px}
+  .fila-add button{height:46px;padding:0 16px;border:0;border-radius:12px;background:var(--verde);color:#fff;font-size:16px;font-weight:700}
+  .btn-resumen{display:block;width:calc(100% - 24px);margin:12px 12px 0;height:48px;border:2px solid var(--verde);border-radius:14px;
+    background:#fff;color:var(--verde-osc);font-size:16px;font-weight:700}
+  .estado{margin:10px 16px;font-size:13px;color:#666;text-align:center;min-height:18px}
+  .aviso{margin:30px 18px;background:#fff;border-radius:14px;padding:20px;text-align:center;font-size:16px}
+  .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+    background:var(--verde-osc);color:#fff;padding:10px 18px;border-radius:30px;font-weight:600;opacity:0;transition:.25s;pointer-events:none}
+  .toast.ver{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header>
+  <div class="club">Escuela de Fútbol Deportivo Liceo</div>
+  <h1 id="titulo">Convocatoria</h1>
+  <div class="detalle" id="detalle"></div>
+</header>
+
+<div class="resumen">
+  <div class="chip si"><b id="nSi">0</b><span>Participan</span></div>
+  <div class="chip no"><b id="nNo">0</b><span>No</span></div>
+  <div class="chip pend"><b id="nPend">0</b><span>Sin marcar</span></div>
+</div>
+
+<p class="ayuda">Busca el nombre de tu hijo y elige <b>Sí</b> o <b>No</b>. Se guarda solo.</p>
+<ul id="lista"></ul>
+<form class="agregar" id="formAgregar">
+  <label for="nuevo">¿No está tu hijo en la lista? Anótalo:</label>
+  <div class="fila-add">
+    <input id="nuevo" maxlength="40" placeholder="Nombre y apellido" autocomplete="off">
+    <button type="submit">Anotar</button>
+  </div>
+</form>
+<button class="btn-resumen" id="btnResumen" type="button">📋 Copiar resumen para WhatsApp</button>
+<div class="estado" id="estado"></div>
+
+<div class="barra">
+  <button id="btnWsp" type="button">Compartir por WhatsApp</button>
+  <button id="btnAct" type="button">Actualizar</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = "https://ngpsxeaxrdthyaqdazvk.supabase.co";
+const SB_KEY = "sb_publishable_f0sYBMA-PUGxlAmhXJVzBA_TGpbboje";
+const ID = new URLSearchParams(location.search).get("c") || "";
+const CACHE = "conv_" + ID;
+let datos = null, ocupado = false;
+
+const $ = s => document.querySelector(s);
+
+async function rpc(fn, body){
+  const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, {
+    method:"POST",
+    headers:{ "apikey":SB_KEY, "Authorization":"Bearer "+SB_KEY, "Content-Type":"application/json" },
+    body:JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+
+function toast(t){ const el=$("#toast"); el.textContent=t; el.classList.add("ver"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("ver"),1800); }
+
+function hora(iso){
+  const d=new Date(iso); const p=n=>String(n).padStart(2,"0");
+  return `${p(d.getDate())}-${p(d.getMonth()+1)}-${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+function pintar(){
+  if(!datos) return;
+  $("#titulo").textContent = datos.titulo || "Convocatoria";
+  $("#detalle").textContent = datos.detalle || "";
+  document.title = (datos.titulo||"Convocatoria")+" · Deportivo Liceo";
+  const js = datos.jugadores || [];
+  let si=0,no=0;
+  const ul=$("#lista");
+  // Si alguien tiene un select abierto, no lo redibujamos
+  const activo = document.activeElement && document.activeElement.tagName==="SELECT" ? +document.activeElement.dataset.i : -1;
+  if(ul.children.length !== js.length){ ul.innerHTML=""; js.forEach((_,i)=>ul.appendChild(fila(i))); }
+  js.forEach((j,i)=>{
+    const e=j.estado||""; if(e==="si")si++; else if(e==="no")no++;
+    const li=ul.children[i];
+    li.className=e; li.querySelector(".nombre").textContent=j.nombre; li.querySelector(".num").textContent=i+1;
+    const sel=li.querySelector("select");
+    if(i!==activo){ sel.value=e; }
+    sel.className=sel.value;
+  });
+  $("#nSi").textContent=si; $("#nNo").textContent=no; $("#nPend").textContent=js.length-si-no;
+  if(datos.updated_at) $("#estado").textContent="Última actualización: "+hora(datos.updated_at);
+}
+
+function fila(i){
+  const li=document.createElement("li");
+  li.innerHTML=`<span class="num"></span><span class="nombre"></span>
+    <select data-i="${i}" aria-label="¿Participa?">
+      <option value="">— Marcar —</option><option value="si">✅ Sí</option><option value="no">❌ No</option>
+    </select>`;
+  li.querySelector("select").addEventListener("change", e=>marcar(i, e.target.value, e.target));
+  return li;
+}
+
+async function marcar(i, estado, sel){
+  sel.className=estado; sel.closest("li").className=estado;
+  sel.disabled=true;
+  try{
+    const r = await rpc("conv_marcar",{p_id:ID,p_idx:i,p_estado:estado});
+    if(!r) throw new Error("sin respuesta");
+    datos=r; guardarCache(); sel.disabled=false; sel.blur(); pintar();
+    toast(estado==="si"?"Guardado: participa ✅":estado==="no"?"Guardado: no participa":"Marca borrada");
+  }catch(err){
+    sel.disabled=false; toast("No se pudo guardar. Revisa tu señal.");
+    cargar();
+  }
+}
+
+function guardarCache(){ try{ localStorage.setItem(CACHE, JSON.stringify(datos)); }catch(e){} }
+
+async function cargar(manual){
+  if(ocupado) return; ocupado=true;
+  try{
+    const r = await rpc("conv_ver",{p_id:ID});
+    if(!r){ $("#lista").innerHTML=""; $("#lista").insertAdjacentHTML("afterend",""); avisar("Esta convocatoria no existe o ya se cerró."); }
+    else { datos=r; guardarCache(); pintar(); if(manual) toast("Lista actualizada"); }
+  }catch(e){
+    if(!datos) avisar("No se pudo cargar la lista. Revisa tu conexión e intenta de nuevo.");
+    else $("#estado").textContent="Sin conexión: mostrando la última lista guardada";
+  }
+  ocupado=false;
+}
+
+function avisar(t){ $("#lista").innerHTML=`<li class="aviso" style="display:block;border:0">${t}</li>`; }
+
+$("#formAgregar").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const inp=$("#nuevo"); const nombre=inp.value.trim().replace(/\s+/g," ");
+  if(nombre.length<2){ toast("Escribe el nombre"); return; }
+  const btn=e.target.querySelector("button"); btn.disabled=true;
+  try{
+    const r=await rpc("conv_agregar",{p_id:ID,p_nombre:nombre});
+    if(!r) throw new Error();
+    datos=r; guardarCache(); pintar(); inp.value=""; inp.blur();
+    toast("Anotado: participa ✅");
+    $("#lista").lastElementChild.scrollIntoView({behavior:"smooth",block:"center"});
+  }catch(err){ toast("No se pudo anotar. Revisa tu señal."); }
+  btn.disabled=false;
+});
+
+function resumen(){
+  const js=(datos&&datos.jugadores)||[];
+  const g=e=>js.filter(j=>(j.estado||"")===e).map(j=>"• "+j.nombre);
+  const si=g("si"), no=g("no"), pe=g("");
+  let t=`⚽ *${(datos&&datos.titulo)||"Convocatoria"}*\n\n✅ Participan (${si.length})\n${si.join("\n")||"—"}\n\n❌ No participan (${no.length})\n${no.join("\n")||"—"}`;
+  if(pe.length) t+=`\n\n⏳ Sin marcar (${pe.length})\n${pe.join("\n")}`;
+  return t;
+}
+$("#btnResumen").addEventListener("click", async ()=>{
+  const t=resumen();
+  try{ await navigator.clipboard.writeText(t); toast("Resumen copiado"); }
+  catch(e){ location.href="https://wa.me/?text="+encodeURIComponent(t); }
+});
+
+$("#btnAct").addEventListener("click",()=>cargar(true));
+$("#btnWsp").addEventListener("click",()=>{
+  const t=(datos&&datos.titulo)||"Convocatoria";
+  const msg=`⚽ *${t}*\nApoderados: marquen aquí si su hijo participa 👇\n${location.href}`;
+  location.href="https://wa.me/?text="+encodeURIComponent(msg);
+});
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) cargar(); });
+
+if(!ID){ avisar("Falta el código de la convocatoria en el enlace."); }
+else{
+  try{ const c=localStorage.getItem(CACHE); if(c){ datos=JSON.parse(c); pintar(); } }catch(e){}
+  cargar();
+  setInterval(()=>{ if(!document.hidden) cargar(); }, 15000);
+}
+</script>
+</body>
+</html>
