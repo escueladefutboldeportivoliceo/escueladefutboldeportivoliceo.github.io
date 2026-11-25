@@ -45,7 +45,8 @@
     display:flex;gap:10px}
   .barra button{flex:1;height:52px;border:0;border-radius:14px;font-size:16px;font-weight:700}
   #btnWsp{background:#25d366;color:#05381b}
-  #btnAct{background:var(--amarillo);color:#1a1200;flex:0 0 120px}
+  #btnAct{background:var(--amarillo);color:#1a1200}
+  .barra.profe-barra #btnAct{flex:0 0 120px}
   .agregar{margin:14px 12px 0;background:#fff;border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
   .agregar label{display:block;font-size:15px;font-weight:600;margin-bottom:8px}
   .fila-add{display:flex;gap:8px}
@@ -90,7 +91,7 @@
 <div class="estado" id="estado"></div>
 
 <div class="barra">
-  <button id="btnWsp" type="button">Compartir por WhatsApp</button>
+  <button id="btnWsp" type="button" hidden>Compartir por WhatsApp</button>
   <button id="btnAct" type="button">Actualizar</button>
 </div>
 <div class="toast" id="toast"></div>
@@ -159,6 +160,8 @@ function pintar(){
   $("#nSi").textContent=si; $("#nNo").textContent=no; $("#nPend").textContent=js.length-si-no;
   $("#modoProfe").hidden=!datos.admin;
   $("#btnResumen").hidden=!datos.admin;
+  $("#btnWsp").hidden=!datos.admin;
+  $(".barra").classList.toggle("profe-barra", !!datos.admin);
   if(datos.updated_at) $("#estado").textContent="Última actualización: "+hora(datos.updated_at);
 }
 
@@ -250,12 +253,12 @@ $("#btnResumen").addEventListener("click", async ()=>{
   catch(e){ location.href="https://wa.me/?text="+encodeURIComponent(t); }
 });
 
-$("#btnAct").addEventListener("click",()=>cargar(true));
 $("#btnWsp").addEventListener("click",()=>{
   const t=(datos&&datos.titulo)||"Convocatoria";
-  const msg=`⚽ *${t}*\nApoderados: marquen aquí si su hijo participa 👇\n${LINK_PUBLICO}`;
+  const msg=`⚽ *${t}*\nApoderados, marquen aquí si su hijo(a) participará en el campeonato 👇\n${LINK_PUBLICO}`;
   location.href="https://wa.me/?text="+encodeURIComponent(msg);
 });
+$("#btnAct").addEventListener("click",()=>cargar(true));
 document.addEventListener("visibilitychange",()=>{ if(!document.hidden) cargar(); });
 
 if(!ID){ avisar("Falta el código de la convocatoria en el enlace."); }
