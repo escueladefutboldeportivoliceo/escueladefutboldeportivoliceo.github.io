@@ -78,10 +78,10 @@
 </div>
 
 <div class="profe" id="modoProfe" hidden>Modo profesor: puedes cambiar cualquier marca</div>
-<p class="ayuda">Busca el nombre de tu hijo y elige <b>Sí</b> o <b>No</b>. Se guarda solo. Solo tú podrás cambiar lo que marques 🔒</p>
+<p class="ayuda">Busca el nombre del jugador y elige <b>Sí</b> o <b>No</b>. Se guarda solo. Solo tú podrás cambiar lo que marques 🔒</p>
 <ul id="lista"></ul>
 <form class="agregar" id="formAgregar">
-  <label for="nuevo">¿No está tu hijo en la lista? Anótalo:</label>
+  <label for="nuevo">¿No está el jugador en la lista? Anótalo:</label>
   <div class="fila-add">
     <input id="nuevo" maxlength="40" placeholder="Nombre y apellido" autocomplete="off">
     <button type="submit">Anotar</button>
@@ -167,7 +167,7 @@ function pintar(){
 
 function fila(i){
   const li=document.createElement("li");
-  li.innerHTML=`<span class="num"></span><span class="nombre"></span><span class="candado" hidden title="Ya lo marcó su apoderado">🔒</span>
+  li.innerHTML=`<span class="num"></span><span class="nombre"></span><span class="candado" hidden title="Ya está marcado">🔒</span>
     <select data-i="${i}" aria-label="¿Participa?">
       <option value="">— Marcar —</option><option value="si">✅ Sí</option><option value="no">❌ No</option>
     </select>`;
@@ -199,7 +199,7 @@ async function marcar(i, estado, sel){
     const r = await rpc("conv_lista_marcar",{p_id:ID,p_idx:i,p_estado:estado,p_disp:DISP,p_admin:ADMIN});
     if(!r) throw new Error("sin respuesta");
     datos=r; guardarCache(); sel.disabled=false; sel.blur(); pintar();
-    if(r.error==="bloqueado"){ toast("Este jugador ya lo marcó su apoderado 🔒"); return; }
+    if(r.error==="bloqueado"){ toast("Este jugador ya está marcado 🔒"); return; }
     toast(estado==="si"?"Guardado: participa ✅":estado==="no"?"Guardado: no participa":"Marca borrada");
   }catch(err){
     sel.disabled=false; toast("No se pudo guardar. Revisa tu señal.");
@@ -256,7 +256,7 @@ $("#btnResumen").addEventListener("click", async ()=>{
 $("#btnWsp").addEventListener("click",()=>{
   const t=(datos&&datos.titulo)||"Convocatoria";
   const det=(datos&&datos.detalle)?` – ${datos.detalle}`:"";
-  const msg=`⚽ *${t}${det}*\nApoderados, marquen aquí si su hijo(a) participará 👇\n${LINK_PUBLICO}`;
+  const msg=`⚽ *${t}${det}*\nMarquen aquí si el jugador participará 👇\n${LINK_PUBLICO}`;
   location.href="https://wa.me/?text="+encodeURIComponent(msg);
 });
 $("#btnAct").addEventListener("click",()=>cargar(true));
