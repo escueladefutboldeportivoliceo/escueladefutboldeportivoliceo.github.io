@@ -255,7 +255,8 @@ $("#btnResumen").addEventListener("click", async ()=>{
 
 $("#btnWsp").addEventListener("click",()=>{
   const t=(datos&&datos.titulo)||"Convocatoria";
-  const msg=`⚽ *${t}*\nApoderados, marquen aquí si su hijo(a) participará en el campeonato 👇\n${LINK_PUBLICO}`;
+  const det=(datos&&datos.detalle)?` – ${datos.detalle}`:"";
+  const msg=`⚽ *${t}${det}*\nApoderados, marquen aquí si su hijo(a) participará 👇\n${LINK_PUBLICO}`;
   location.href="https://wa.me/?text="+encodeURIComponent(msg);
 });
 $("#btnAct").addEventListener("click",()=>cargar(true));
