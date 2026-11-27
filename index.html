@@ -635,6 +635,29 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 .editado{white-space:pre-line}
 [data-edit][hidden]{display:none!important}
 
+/* Auspiciadores: logos sueltos que se van corriendo */
+#auspInicio{margin-top:40px;text-align:center}
+.ausp-tit{font-size:26px;line-height:1.2;font-weight:900;color:var(--verde);margin:0 auto 18px;max-width:340px;text-transform:none;letter-spacing:0}
+#auspInicio .cinta{margin:0 -16px;padding:10px 0}
+#auspInicio .pista{gap:40px;align-items:center}
+#auspInicio .pista>a,#auspInicio .pista>div{background:none;border:0;box-shadow:none;border-radius:0;padding:0;height:64px;min-width:0;font-size:17px;font-weight:900;color:var(--verde-osc);white-space:nowrap}
+#auspInicio .pista img{max-height:52px;max-width:130px;object-fit:contain}
+.ausp-ver{display:inline-block;margin-top:14px;color:var(--verde);font-weight:800;font-size:14px;text-decoration:none}
+@media (min-width:1000px){
+  .ausp-tit{font-size:34px;max-width:none}
+  #auspInicio .cinta{margin:0}
+  #auspInicio .pista{gap:80px}
+  #auspInicio .pista>a,#auspInicio .pista>div{height:80px;font-size:20px}
+  #auspInicio .pista img{max-height:76px;max-width:190px}
+}
+@media (min-width:1000px){.pie-datos wbr{display:none}}
+
+/* cinta de auspiciadores más fluida */
+#auspInicio .cinta{-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);contain:paint}
+#auspInicio .pista{animation-name:cintaSuave;animation-timing-function:linear;animation-iteration-count:infinite;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translate3d(0,0,0)}
+#auspInicio .pista img{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(0)}
+@keyframes cintaSuave{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+
 </style>
 </head>
 <body>
@@ -1051,8 +1074,9 @@ footer{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px))}
         const inner = x.imagen_url ? `<img src="${h(x.imagen_url)}" alt="${h(x.titulo)}" loading="lazy">` : `<span>${h(x.titulo)}</span>`;
         return x.link ? `<a href="${h(x.link)}" target="_blank" rel="noopener">${inner}</a>` : `<div>${inner}</div>`;
       }).join('');
-      let fila = uno; while (fila.split('</').length < 12) fila += uno;
-      ai.innerHTML = `<div class="ausp-cab"><span>Nos apoyan</span><a href="#/auspiciadores">Ver todos ›</a></div><div class="cinta"><div class="pista">${fila}${fila}</div></div>`;
+      let fila = uno; while (fila.split('</').length < 16) fila += uno;
+      const vel = Math.max(12, fila.split("</").length * 2.1);
+      ai.innerHTML = `<div class="ausp-tit">Empresas que nos apoyan</div><div class="cinta"><div class="pista" style="animation-duration:${vel}s">${fila}${fila}</div></div><a class="ausp-ver" href="#/auspiciadores">Ver todos los auspiciadores ›</a>`;
       ai.hidden = false;
     }
     const docs = de('documento').filter(x => x.link || x.imagen_url);
